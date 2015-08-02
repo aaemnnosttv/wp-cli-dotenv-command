@@ -756,15 +756,15 @@ function format_line( $key, $value )
  */
 function get_filepath( $assoc_args )
 {
-    if ( empty( $assoc_args['file'] ) )
-        return getcwd() . '/.env';
+    $file = WP_CLI\Utils\get_flag_value( $assoc_args, 'file', '.env' );
 
-    if ( \WP_CLI\Utils\is_path_absolute( $assoc_args['file'] ) )
-    {
-        return realpath( $assoc_args['file'] );
+    // if absolute path was passed
+    if ( WP_CLI\Utils\is_path_absolute( $file ) ) {
+        return realpath( $file );
     }
 
-    return realpath(getcwd() . $assoc_args['file']);
+    // if relative path, or just a file name was passed
+    return realpath( getcwd() . '/' . $file );
 }
 
 /**
