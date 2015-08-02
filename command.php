@@ -51,7 +51,7 @@ class Dotenv_File
     /**
      * Pattern to match a var definition
      */
-    const PATTERN_KEY_FORMAT = '/^%s(\s+)?=/';
+    const PATTERN_KEY_CAPTURE_FORMAT = '/^%s(\s+)?=/';
 
     /**
      *
@@ -145,7 +145,7 @@ class Dotenv_File
     public function get_pattern_for_key( $key )
     {
         $preg_key = preg_quote(trim($key), '/');
-        return sprintf(static::PATTERN_KEY_FORMAT, $preg_key);
+        return sprintf(static::PATTERN_KEY_CAPTURE_FORMAT, $preg_key);
     }
 
     /**
