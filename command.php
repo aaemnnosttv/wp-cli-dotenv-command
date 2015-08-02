@@ -369,7 +369,7 @@ class Dotenv_File
 
         return $pairs;
     }
-    
+
 }
 
 
@@ -465,7 +465,11 @@ class Dotenv_Command extends WP_CLI_Command
     }
 
     /**
-     * Set an environment value in .env
+     * Set a value in the environment file for a given key
+     *
+     * [--file=<path-to-dotenv>]
+     * : Path to the environment file.  Default: '.env'
+     *
      * @synopsis <key> <value>
      *
      * @when before_wp_load
@@ -477,17 +481,17 @@ class Dotenv_Command extends WP_CLI_Command
 
         $dotenv = get_dotenv_for_write_or_fail($assoc_args);
 
-        if ( $dotenv->set($key, $value) ) {
-            WP_CLI::success("'$key' set successfully!");
-            $dotenv->save();
-            return;
-        }
+        $dotenv->set($key, $value);
+        $dotenv->save();
 
-        WP_CLI::error('There was a problem trying to set that. Sorry!');
+        WP_CLI::success("'$key' set successfully!");
     }
 
     /**
-     * Get an environment value from .env
+     * Get the value for a given key from the environment file
+     *
+     * [--file=<path-to-dotenv>]
+     * : Path to the environment file.  Default: '.env'
      *
      * @synopsis <key>
      *
@@ -592,12 +596,12 @@ WP_CLI::add_command( 'dotenv', __NAMESPACE__ . '\\Dotenv_Command' );
 class Salts
 {
     /**
-     *
+     * WordPress.org Salt Generator Service URL
      */
     const GENERATOR_URL = 'https://api.wordpress.org/secret-key/1.1/salt/';
 
     /**
-     *
+     * Pattern to match both key and value
      */
     const PATTERN_CAPTURE = '#\'([^\']+)\'#';
 
@@ -607,7 +611,7 @@ class Salts
     public static function fetch_array()
     {
         // read in each line as an array
-        $response = file(static::GENERATOR_URL, FILE_IGNORE_NEW_LINES);
+        $response = file( static::GENERATOR_URL );
 
         if ( ! is_array( $response ) ) {
             WP_CLI::error('There was a problem fetching the salts from the WordPress generator service.');
@@ -702,10 +706,10 @@ class Dotenv_Salts_Command extends WP_CLI_Command
     }
 
     /**
-     * Regenerate salts for a .env file
+     * Regenerate salts for the environment file
      *
      * [--file=<path-to-dotenv>]
-     * : Path to .env. Defaults to current directory.
+     * : Path to the environment file.  Default: '.env'
      *
      * @synopsis [--file=<path-to-dotenv>]
      *
@@ -714,12 +718,10 @@ class Dotenv_Salts_Command extends WP_CLI_Command
     function regenerate( $_, $assoc_args )
     {
         $dotenv = get_dotenv_for_write_or_fail($assoc_args);
-        $salts = Salts::fetch_array();
 
-        if ( ! $salts ) return;
+        if ( ! $salts = Salts::fetch_array() ) return;
 
-        foreach ( $salts as $key => $value )
-        {
+        foreach ( $salts as $key => $value ) {
             $dotenv->set($key, $value);
         }
 
@@ -727,8 +729,6 @@ class Dotenv_Salts_Command extends WP_CLI_Command
 
         WP_CLI::success('Salts regenerated.');
     }
-
-
 
 }
 WP_CLI::add_command( 'dotenv salts', __NAMESPACE__ . '\\Dotenv_Salts_Command' );
@@ -768,18 +768,23 @@ function get_filepath( $assoc_args )
 }
 
 /**
+ * Get a new Dotenv_File instance from CLI args
+ *
  * @param $args
  *
  * @return Dotenv_File
  */
 function get_dotenv( $args )
 {
-    $filepath = get_filepath($args);
+    $filepath = get_filepath( $args );
 
-    return new Dotenv_File($filepath);
+    return new Dotenv_File( $filepath );
 }
 
 /**
+ * Load the .env file, while ensuring read permissions
+ * or die trying!
+ *
  * @param $args
  *
  * @return Dotenv_File
@@ -788,13 +793,23 @@ function get_dotenv_for_read_or_fail( $args )
 {
     $dotenv = get_dotenv($args);
 
-    if ( $dotenv->is_readable() ) return $dotenv->load();
+    if ( ! $dotenv->exists() ) {
+        WP_CLI::error('File does not exist: ' . $dotenv->get_filepath());
+        exit;
+    }
+
+    if ( $dotenv->is_readable() ) {
+        return $dotenv->load();
+    }
 
     WP_CLI::error($dotenv->get_filepath() . ' is not readable! Check your file permissions.');
     exit;
 }
 
 /**
+ * Load the .env file, while ensuring write permissions
+ * or die trying!
+ *
  * @param $args
  *
  * @return Dotenv_File
