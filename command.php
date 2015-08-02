@@ -391,12 +391,18 @@ class Dotenv_Command extends WP_CLI_Command
     ];
 
     /**
-     * Initialize the .env file
+     * Initialize the environment file
      *
      * [--file=<path-to-dotenv>]
-     * : Path to .env. Defaults to current directory.
+     * : Path to the environment file.  Default: '.env'
      *
-     * @synopsis [--file=<path-to-dotenv>]
+     *  [--template=<template-name>]
+     * : Path to a template to use to interactively set values
+     *
+     * [--interactive]
+     * : Set new values from the template interactively. Leave blank for no change.
+     *
+     * @synopsis [--file=<path-to-dotenv>] [--template=<template-name>] [--interactive]
      *
      * @when before_wp_load
      */
@@ -411,62 +417,50 @@ class Dotenv_Command extends WP_CLI_Command
 
         $dotenv = Dotenv_File::create($filepath);
 
+        if ( $template = WP_CLI\Utils\get_flag_value( $assoc_args, 'template' ) )
+        {
+            $this->init_from_template($dotenv, $template, $assoc_args);
+        }
+
         if ( $dotenv->exists() ) {
             WP_CLI::success("$filepath created successfully!");
         }
     }
 
     /**
-     * Generate a .env file.
-     *
-     * ## OPTIONS
-     *
-     * [--file=<path-to-dotenv>]
-     * : Path to .env. Defaults to current directory.
-     *
-     * [--skip-salts]
-     * : If set, keys and salts won't be generated.
-     *
-     * ## EXAMPLES
-     *
-     *     # Standard .env file
-     *     wp dotenv config --DB_NAME=testing --DB_USER=wp --DB_PASSWORD=securepswd
-     *
-     * @when before_wp_load
+     * @param $dotenv
+     * @param $template
+     * @param $assoc_args
      */
-    public function config( $_, $assoc_args )
+    protected function init_from_template( Dotenv_File &$dotenv, $template, $assoc_args )
     {
-        $filepath = get_filepath($assoc_args);
+        $template_path = get_filepath(['file' => $template]);
 
-        if ( file_exists($filepath) ) {
-            WP_CLI::error('.env already exists!');
-            return;
-        }
+        WP_CLI::line("Initializing from template: $template_path");
 
-        Dotenv_File::create($filepath);
-        $dotenv = get_dotenv_for_write_or_fail($assoc_args);
+        copy( $template_path, $dotenv->get_filepath() );
 
-        // handle any args passed as vars to set
-        foreach ( $assoc_args as $assoc_arg => $value )
+        $dotenv = get_dotenv_for_write_or_fail(['file' => $dotenv->get_filepath()]);
+
+        // we can't use WP-CLI --prompt because we're working off the template, not the synopsis
+        if ( $interactive = WP_CLI\Utils\get_flag_value( $assoc_args, 'interactive' ) )
         {
-            if ( in_array($assoc_arg, $this->reserved_keys) ) {
-                continue;
-            }
+            $dotenv->map(function($line) use ($dotenv)
+            {
+                $pair = $dotenv->get_pair_for_line($line);
+                if ( ! $pair['key'] ) return $line;
 
-            $dotenv->set($assoc_arg, $value);
+//                "{$pair['key']} [{$pair['value']}]"
+                $value = \cli\prompt($pair['key'], $pair['value']);
+
+
+                if ( ! strlen($value) ) return $line;
+
+                return format_line($pair['key'], $value);
+            });
+
+            $dotenv->save();
         }
-
-        // add salts
-        if ( ! \WP_CLI\Utils\get_flag_value( $assoc_args, 'skip-salts' ) )
-        {
-            foreach( Salts::fetch_array() as $salt_key => $salt_val ) {
-                $dotenv->set($salt_key, $salt_val);
-            }
-        }
-
-        $dotenv->save();
-
-        WP_CLI::success( sprintf('Wrote %d lines.', $dotenv->size()) );
     }
 
     /**
