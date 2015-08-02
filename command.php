@@ -226,6 +226,27 @@ class Dotenv_File
     }
 
     /**
+     * @param $key
+     *
+     * @return int Lines removed
+     */
+    public function remove( $key )
+    {
+        $removed = 0;
+
+        $this->filter(function($line) use ($key, &$removed)
+        {
+            if ( $this->is_key_match($key, $line) ) {
+                $removed++;
+                return false;
+            }
+
+            return true;
+        });
+
+        return $removed;
+    }
+
     /**
      * @param callable $callback
      *
@@ -282,6 +303,77 @@ class Dotenv_File
     {
         return preg_match( $this->get_pattern_for_key( $key ), $line );
     }
+
+    /**
+     * Whether or not the file defines the given key
+     *
+     * @param $key
+     *
+     * @return bool
+     */
+    public function has_key( $key )
+    {
+        foreach ( $this->lines as $line )
+        {
+            if ( $this->is_key_match($key, $line) )
+                return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $line
+     *
+     * @return bool
+     */
+    public function get_key_for_line( $line )
+    {
+        $pieces = explode( '=', $line, 2 );
+        $pieces = array_map( 'trim', $pieces );
+
+        return array_shift( $pieces );
+    }
+
+    /**
+     * @param $line
+     *
+     * @return array
+     */
+    public function get_pair_for_line( $line )
+    {
+        $pieces = explode( '=', $line, 2 );
+        $pieces = array_map( 'trim', $pieces );
+
+        $key   = array_shift( $pieces );
+        $value = array_shift( $pieces );
+
+        if ( 0 === strpos( $value, '\'' ) ) {
+            $value = trim( $value, '\'' );
+        }
+        elseif ( 0 === strpos( $value, '"' ) ) {
+            $value = trim( $value, '"' );
+        }
+
+        return compact('key','value');
+    }
+
+    public function get_pairs()
+    {
+        $pairs = [ ];
+
+        $this->map(function($line) use (&$pairs)
+        {
+            $pair = $this->get_pair_for_line($line);
+
+            if ( strlen($pair['key']) ) {
+                $pairs[ $pair['key'] ] = $pair['value'];
+            }
+        });
+
+        return $pairs;
+    }
+    
 }
 
 
