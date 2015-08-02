@@ -513,6 +513,32 @@ class Dotenv_Command extends WP_CLI_Command
 
     }
 
+    /**
+     * Delete a definition from the environment file
+     *
+     * [--file=<path-to-dotenv>]
+     * : Path to the environment file.  Default: '.env'
+     *
+     * @synopsis <key>...
+     *
+     * @when before_wp_load
+     */
+    public function delete( $_, $assoc_args )
+    {
+        $dotenv = get_dotenv_for_read_or_fail( $assoc_args );
+
+        foreach ( $_ as $key )
+        {
+            if ( $result = $dotenv->remove($key) ) {
+                WP_CLI::success("Removed '$key'");
+            } else {
+                WP_CLI::warning("No line found for key: '$key'");
+            }
+        }
+
+        $dotenv->save();
+    }
+
 }
 WP_CLI::add_command( 'dotenv', __NAMESPACE__ . '\\Dotenv_Command' );
 
