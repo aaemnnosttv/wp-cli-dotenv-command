@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 use WP_CLI;
+use WP_CLI\Formatter;
 use WP_CLI_Command; // duh
 
 /**
@@ -537,6 +538,47 @@ class Dotenv_Command extends WP_CLI_Command
         }
 
         $dotenv->save();
+    }
+
+
+    /**
+     * List the defined variables from the environment file
+     *
+     * [--format=<format>]
+     * : Accepted values: table, csv, json, count. Default: table
+     *
+     * [--file=<path-to-dotenv>]
+     * : Path to the environment file.  Default: '.env'
+     *
+     * @subcommand list
+     * @when before_wp_load
+     */
+    public function _list( $_, $assoc_args )
+    {
+        $dotenv = get_dotenv_for_read_or_fail($assoc_args);
+
+        $keys = ! empty( $assoc_args['keys'] ) ? explode( ',', $assoc_args['keys'] ) : array();
+
+        $items = [ ];
+        $pairs = $dotenv->get_pairs();
+
+        foreach ( $pairs as $key => $value )
+        {
+            // Skip if not requested
+            if ( ! empty( $keys ) && ! in_array( $key, $keys ) ) {
+                continue;
+            }
+
+            $items[ ] = (object) compact('key', 'value');
+        }
+
+        if ( ! empty( $assoc_args['fields'] ) ) {
+            $fields = explode( ',', $assoc_args['fields'] );
+        } else {
+            $fields = ['key','value'];
+        }
+        $formatter = new Formatter( $assoc_args, $fields );
+        $formatter->display_items( $items );
     }
 
 }
