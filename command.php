@@ -65,10 +65,6 @@ class Dotenv_File
      */
     public function __construct( $filepath )
     {
-        if ( is_dir($filepath) ) {
-            $filepath = rtrim($filepath, '\\/') . '/.env';
-        }
-
         $this->filepath = $filepath;
         $this->filename = basename($filepath);
     }
