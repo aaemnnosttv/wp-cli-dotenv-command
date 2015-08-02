@@ -226,6 +226,31 @@ class Dotenv_File
     }
 
     /**
+    /**
+     * @param callable $callback
+     *
+     * @return $this
+     */
+    public function map( callable $callback )
+    {
+        $this->lines = array_map($callback, $this->lines);
+
+        return $this;
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return $this
+     */
+    public function filter( callable $callback )
+    {
+        $this->lines = array_filter($this->lines, $callback);
+
+        return $this;
+    }
+
+    /**
      * @param $line
      *
      * @return bool|string
