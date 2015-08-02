@@ -1,14 +1,15 @@
 {
     "name": "aaemnnosttv/wp-cli-dotenv-command",
     "description": "Dotenv commands for WP-CLI",
-    "require-dev": {
-        "wp-cli/wp-cli": "^0.19.2"
-    },
     "license": "GPL-2.0",
     "authors": [
         {
             "name": "Evan Mattson",
             "email": "me@aaemnnost.tv"
         }
-    ]
+    ],
+    "autoload": {
+        "classmap": ["src/"],
+        "files": ["command.php", "src/functions.php"]
+    }
 }
