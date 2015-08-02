@@ -24,13 +24,14 @@ function get_filepath( $assoc_args )
 {
     $file = \WP_CLI\Utils\get_flag_value( $assoc_args, 'file', '.env' );
 
-    // if absolute path was passed
-    if ( \WP_CLI\Utils\is_path_absolute( $file ) ) {
-        return realpath( $file );
-    }
-
     // if relative path, or just a file name was passed
-    return realpath( getcwd() . '/' . $file );
+    $dirname  = dirname( $file );
+    $filename = basename( $file );
+    $relpath  = $dirname ? "/$dirname" : '';
+    $path     = realpath( getcwd() . $relpath );
+    $path .= "/$filename";
+
+    return $path;
 }
 
 /**

@@ -50,7 +50,7 @@ class Dotenv_File
      */
     public static function create( $filepath )
     {
-        $dotenv = new static( get_filepath(['file' => $filepath]) );
+        $dotenv = new static( $filepath );
 
         if ( ! $dotenv->exists() ) {
             touch( $filepath );
