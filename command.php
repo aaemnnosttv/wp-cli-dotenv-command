@@ -809,3 +809,40 @@ function get_dotenv_for_write_or_fail( $args )
     exit;
 }
 
+/**
+ * CLI input prompt
+ *
+ * @param $question
+ * @param $default
+ *
+ * @return bool
+ */
+function prompt( $question, $default )
+{
+    try {
+        $response = \cli\prompt( $question, $default );
+    } catch( \Exception $e ) {
+        WP_CLI::line();
+        return false;
+    }
+
+    return $response;
+}
+
+/**
+ * Keys defined by WP Salt Generator
+ * @return array
+ */
+function salt_keys()
+{
+    return [
+        'AUTH_KEY',
+        'SECURE_AUTH_KEY',
+        'LOGGED_IN_KEY',
+        'NONCE_KEY',
+        'AUTH_SALT',
+        'SECURE_AUTH_SALT',
+        'LOGGED_IN_SALT',
+        'NONCE_SALT'
+    ];
+}
