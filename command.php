@@ -52,12 +52,7 @@ class Dotenv_File
      * Pattern to match a var definition
      */
     const PATTERN_KEY_CAPTURE_FORMAT = '/^%s(\s+)?=/';
-
-    /**
-     *
-     */
-    const PATTERN_VALUE_FORMAT = '/^%s(\s+)?=/';
-
+    
     /**
      * Dotenv_File constructor.
      *
