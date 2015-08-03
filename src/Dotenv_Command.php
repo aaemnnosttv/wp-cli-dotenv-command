@@ -29,6 +29,9 @@ class Dotenv_Command extends WP_CLI_Command
      * @synopsis [--file=<path-to-dotenv>] [--with-salts] [--template=<template-name>] [--interactive]
      *
      * @when before_wp_load
+     *
+     * @param $_
+     * @param $assoc_args
      */
     public function init( $_, $assoc_args )
     {
@@ -117,6 +120,9 @@ class Dotenv_Command extends WP_CLI_Command
      * @synopsis <key> <value>
      *
      * @when before_wp_load
+     *
+     * @param $_
+     * @param $assoc_args
      */
     public function set( $_, $assoc_args )
     {
@@ -138,6 +144,9 @@ class Dotenv_Command extends WP_CLI_Command
      * @synopsis <key>
      *
      * @when before_wp_load
+     *
+     * @param $_
+     * @param $assoc_args
      */
     public function get( $_, $assoc_args )
     {
@@ -164,6 +173,9 @@ class Dotenv_Command extends WP_CLI_Command
      * @synopsis <key>...
      *
      * @when before_wp_load
+     *
+     * @param $_
+     * @param $assoc_args
      */
     public function delete( $_, $assoc_args )
     {
@@ -193,6 +205,9 @@ class Dotenv_Command extends WP_CLI_Command
      *
      * @subcommand list
      * @when before_wp_load
+     *
+     * @param $_
+     * @param $assoc_args
      */
     public function _list( $_, $assoc_args )
     {

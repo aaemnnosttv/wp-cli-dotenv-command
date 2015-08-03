@@ -19,6 +19,9 @@ class Dotenv_Salts_Command extends WP_CLI_Command
      * @synopsis [--file=<path-to-dotenv>]
      *
      * @when before_wp_load
+     *
+     * @param $_
+     * @param $assoc_args
      */
     function generate( $_, $assoc_args )
     {
@@ -57,6 +60,9 @@ class Dotenv_Salts_Command extends WP_CLI_Command
      * @synopsis [--file=<path-to-dotenv>]
      *
      * @when before_wp_load
+     *
+     * @param $_
+     * @param $assoc_args
      */
     function regenerate( $_, $assoc_args )
     {
