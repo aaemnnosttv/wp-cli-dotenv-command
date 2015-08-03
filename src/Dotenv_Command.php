@@ -10,17 +10,6 @@ use WP_CLI_Command;
  */
 class Dotenv_Command extends WP_CLI_Command
 {
-    /**
-     * @var
-     */
-    protected $dotenv;
-
-    /**
-     * @var array
-     */
-    protected $reserved_keys = [
-        'file'
-    ];
 
     /**
      * Initialize the environment file
