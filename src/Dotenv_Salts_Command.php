@@ -25,29 +25,36 @@ class Dotenv_Salts_Command extends WP_CLI_Command
      */
     function generate( $_, $assoc_args )
     {
-        $dotenv = get_dotenv_for_write_or_fail($assoc_args);
+        $dotenv = get_dotenv_for_write_or_fail( $assoc_args );
+        $set    = $skipped = [ ];
 
-        $set = $skipped = [ ];
+        if ( ! $salts = Salts::fetch_array() ) return;
 
-        foreach( Salts::fetch_array() as $key => $value )
+        foreach ( $salts as $key => $value )
         {
-            if ( $dotenv->has_key($key) ) {
-                WP_CLI::line("The '$key' already exists, skipping.");
+            if ( $dotenv->has_key( $key ) )
+            {
+                WP_CLI::line( "The '$key' already exists, skipping." );
                 $skipped[ ] = $key;
                 continue;
             }
 
-            $dotenv->set($key, $value);
+            $dotenv->set( $key, $value );
             $set[ ] = $key;
         }
 
-        if ( $set && $dotenv->save() ) {
-            WP_CLI::success(count($set) . ' salts set successfully!');
+        $dotenv->save();
+
+        if ( count($set) === count($salts) ) {
+            WP_CLI::success('Salts generated.');
+        }
+        elseif ( $set ) {
+            WP_CLI::success(count($set) . ' salts set.');
         }
 
         if ( $skipped ) {
             WP_CLI::warning('Some keys were already defined in the environment file.');
-            WP_CLI::line("Use 'wp dotenv salts regenerate' to update them.");
+            WP_CLI::line("Use 'dotenv salts regenerate' to update them.");
         }
     }
 
