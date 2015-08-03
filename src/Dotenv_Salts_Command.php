@@ -24,18 +24,18 @@ class Dotenv_Salts_Command extends WP_CLI_Command
     {
         $dotenv = get_dotenv_for_write_or_fail($assoc_args);
 
-        $set = $skipped = [];
+        $set = $skipped = [ ];
 
         foreach( Salts::fetch_array() as $key => $value )
         {
             if ( $dotenv->has_key($key) ) {
                 WP_CLI::line("The '$key' already exists, skipping.");
-                $skipped[] = $key;
+                $skipped[ ] = $key;
                 continue;
             }
 
             $dotenv->set($key, $value);
-            $set[] = $key;
+            $set[ ] = $key;
         }
 
         if ( $set && $dotenv->save() ) {

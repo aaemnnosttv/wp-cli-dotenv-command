@@ -36,7 +36,7 @@ class Dotenv_Command extends WP_CLI_Command
             return;
         }
 
-        $dotenv = Dotenv_File::create($filepath);
+        $dotenv = Dotenv_File::create( $filepath );
 
         if ( $template = \WP_CLI\Utils\get_flag_value( $assoc_args, 'template' ) )
         {
@@ -95,11 +95,9 @@ class Dotenv_Command extends WP_CLI_Command
      */
     public function set( $_, $assoc_args )
     {
-        $key = $_[0];
-        $value = $_[1];
+        list( $key, $value ) = $_;
 
         $dotenv = get_dotenv_for_write_or_fail($assoc_args);
-
         $dotenv->set($key, $value);
         $dotenv->save();
 
@@ -118,13 +116,14 @@ class Dotenv_Command extends WP_CLI_Command
      */
     public function get( $_, $assoc_args )
     {
-        $key = $_[0];
+        list( $key ) = $_;
 
-        $dotenv = get_dotenv_for_read_or_fail($assoc_args);
-        $value = $dotenv->get($key);
+        $dotenv = get_dotenv_for_read_or_fail( $assoc_args );
+        $value = $dotenv->get( $key );
 
-        if ( $value || ! in_array($value, [false, null], true) ) {
-            WP_CLI::line($value);
+        if ( $value || ! in_array( $value, [ false, null ], true ) )
+        {
+            WP_CLI::line( $value );
             return;
         }
 
@@ -178,14 +177,12 @@ class Dotenv_Command extends WP_CLI_Command
      */
     public function _list( $_, $assoc_args )
     {
-        $dotenv = get_dotenv_for_read_or_fail($assoc_args);
+        $dotenv = get_dotenv_for_read_or_fail( $assoc_args );
+        $keys   = \WP_CLI\Utils\get_flag_value( $assoc_args, 'keys', [ ] );
+        $keys   = explode( ',', $keys );
+        $items  = [ ];
 
-        $keys = ! empty( $assoc_args['keys'] ) ? explode( ',', $assoc_args['keys'] ) : array();
-
-        $items = [ ];
-        $pairs = $dotenv->get_pairs();
-
-        foreach ( $pairs as $key => $value )
+        foreach ( $dotenv->get_pairs() as $key => $value )
         {
             // Skip if not requested
             if ( ! empty( $keys ) && ! in_array( $key, $keys ) ) {
@@ -195,11 +192,9 @@ class Dotenv_Command extends WP_CLI_Command
             $items[ ] = (object) compact('key', 'value');
         }
 
-        if ( ! empty( $assoc_args['fields'] ) ) {
-            $fields = explode( ',', $assoc_args['fields'] );
-        } else {
-            $fields = ['key','value'];
-        }
+        $fields = \WP_CLI\Utils\get_flag_value( $assoc_args, 'fields', ['key','value'] );
+        $fields = is_string($fields) ? explode( ',', $fields ) : $fields;
+
         $formatter = new Formatter( $assoc_args, $fields );
         $formatter->display_items( $items );
     }
