@@ -26,7 +26,7 @@ class Salts
         $response = file( static::GENERATOR_URL );
 
         if ( ! is_array( $response ) ) {
-            WP_CLI::error('There was a problem fetching the salts from the WordPress generator service.');
+            WP_CLI::error('There was a problem fetching salts from the WordPress generator service.');
             return;
         }
 
