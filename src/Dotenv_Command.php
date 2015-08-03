@@ -32,7 +32,7 @@ class Dotenv_Command extends WP_CLI_Command
         $filepath = get_filepath($assoc_args);
 
         if ( file_exists( $filepath ) ) {
-            WP_CLI::error('.env already exists!');
+            WP_CLI::error("Environment file already exists at: $filepath");
             return;
         }
 
@@ -84,7 +84,8 @@ class Dotenv_Command extends WP_CLI_Command
     }
 
     /**
-     * Set a value in the environment file for a given key
+     * Set a value in the environment file for a given key.
+     * Updates an existing value or creates a new entry.
      *
      * [--file=<path-to-dotenv>]
      * : Path to the environment file.  Default: '.env'
@@ -101,7 +102,7 @@ class Dotenv_Command extends WP_CLI_Command
         $dotenv->set($key, $value);
         $dotenv->save();
 
-        WP_CLI::success("'$key' set successfully!");
+        WP_CLI::success("'$key' set.");
     }
 
     /**

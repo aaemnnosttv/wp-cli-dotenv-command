@@ -52,7 +52,7 @@ function get_dotenv( $args )
 }
 
 /**
- * Load the .env file, while ensuring read permissions
+ * Load the environment file, while ensuring read permissions
  * or die trying!
  *
  * @param $args
@@ -77,7 +77,7 @@ function get_dotenv_for_read_or_fail( $args )
 }
 
 /**
- * Load the .env file, while ensuring write permissions
+ * Load the environment file, while ensuring write permissions
  * or die trying!
  *
  * @param $args
