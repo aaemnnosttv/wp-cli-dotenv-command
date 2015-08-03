@@ -212,7 +212,7 @@ class Dotenv_Command extends WP_CLI_Command
     public function _list( $_, $assoc_args )
     {
         $dotenv = get_dotenv_for_read_or_fail( $assoc_args );
-        $keys   = \WP_CLI\Utils\get_flag_value( $assoc_args, 'keys', [ ] );
+        $keys   = \WP_CLI\Utils\get_flag_value( $assoc_args, 'keys', '' );
         $keys   = explode( ',', $keys );
         $items  = [ ];
 
