@@ -17,13 +17,16 @@ class Dotenv_Command extends WP_CLI_Command
      * [--file=<path-to-dotenv>]
      * : Path to the environment file.  Default: '.env'
      *
-     *  [--template=<template-name>]
+     * [--with-salts]
+     * : Additionally, generate and define keys for salts
+     *
+     * [--template=<template-name>]
      * : Path to a template to use to interactively set values
      *
      * [--interactive]
      * : Set new values from the template interactively. Leave blank for no change.
      *
-     * @synopsis [--file=<path-to-dotenv>] [--template=<template-name>] [--interactive]
+     * @synopsis [--file=<path-to-dotenv>] [--with-salts] [--template=<template-name>] [--interactive]
      *
      * @when before_wp_load
      */
@@ -38,14 +41,20 @@ class Dotenv_Command extends WP_CLI_Command
 
         $dotenv = Dotenv_File::create( $filepath );
 
-        if ( $template = \WP_CLI\Utils\get_flag_value( $assoc_args, 'template' ) )
-        {
+        if ( ! $dotenv->exists() ) {
+            WP_CLI::error('Failed to create environment file at: ' . $dotenv->get_filepath());
+            return;
+        }
+
+        if ( $template = \WP_CLI\Utils\get_flag_value( $assoc_args, 'template' ) ) {
             $this->init_from_template($dotenv, $template, $assoc_args);
         }
 
-        if ( $dotenv->exists() ) {
-            WP_CLI::success("$filepath created successfully!");
+        if ( \WP_CLI\Utils\get_flag_value( $assoc_args, 'with-salts' ) ) {
+            WP_CLI::run_command( [ 'dotenv', 'salts', 'generate' ], [ 'file' => $dotenv ] );
         }
+
+        WP_CLI::success("$filepath created.");
     }
 
     /**
