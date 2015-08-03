@@ -66,30 +66,45 @@ class Dotenv_Command extends WP_CLI_Command
     {
         $template_path = get_filepath(['file' => $template]);
 
+        if ( ! file_exists($template_path) ) {
+            WP_CLI::error("Template file does not exist at: $template_path");
+            return;
+        }
+        if ( ! is_readable($template_path) ) {
+            WP_CLI::error( "Template file is not readable at: $template_path" );
+            return;
+        }
+        if ( ! $dotenv->is_writable() ) {
+            WP_CLI::error('Environment file is not readable at: ' . $dotenv->get_filepath());
+            return;
+        }
+
         WP_CLI::line("Initializing from template: $template_path");
 
         copy( $template_path, $dotenv->get_filepath() );
 
-        $dotenv = get_dotenv_for_write_or_fail(['file' => $dotenv->get_filepath()]);
-
         // we can't use WP-CLI --prompt because we're working off the template, not the synopsis
-        if ( $interactive = \WP_CLI\Utils\get_flag_value( $assoc_args, 'interactive' ) )
+        if ( ! $interactive = \WP_CLI\Utils\get_flag_value( $assoc_args, 'interactive' ) )
+            return;
+
+        WP_CLI::line('Interactive init');
+        WP_CLI::line('Specify a new value for each key, or leave blank for no change.');
+
+        // iterate over each line and prompt for a new value
+        $dotenv->map(function( $line ) use ( $dotenv )
         {
-            $dotenv->map(function($line) use ($dotenv)
-            {
-                $pair = $dotenv->get_pair_for_line($line);
+            $pair = $dotenv->get_pair_for_line($line);
 
-                if ( ! $pair['key'] ) return $line;
+            if ( ! $pair['key'] ) return $line;
 
-                $value = \cli\prompt($pair['key'], $pair['value']);
+            $user_value = \cli\prompt( $pair[ 'key' ], $pair[ 'value' ] );
 
-                if ( ! strlen($value) ) return $line;
+            if ( ! strlen($user_value) ) return $line;
 
-                return format_line($pair['key'], $value);
-            });
+            return format_line( $pair[ 'key' ], $user_value );
+        });
 
-            $dotenv->save();
-        }
+        $dotenv->save();
     }
 
     /**
