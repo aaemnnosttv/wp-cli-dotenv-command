@@ -149,7 +149,7 @@ class Dotenv_Command extends WP_CLI_Command
      */
     public function delete( $_, $assoc_args )
     {
-        $dotenv = get_dotenv_for_read_or_fail( $assoc_args );
+        $dotenv = get_dotenv_for_write_or_fail( $assoc_args );
 
         foreach ( $_ as $key )
         {
