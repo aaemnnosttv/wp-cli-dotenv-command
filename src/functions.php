@@ -24,6 +24,9 @@ function get_filepath( $assoc_args )
 {
     $file = \WP_CLI\Utils\get_flag_value( $assoc_args, 'file', '.env' );
 
+    if ( $file instanceof Dotenv_File )
+        return $file->get_filepath();
+
     // if relative path, or just a file name was passed
     $dirname  = dirname( $file );
     $filename = basename( $file );
