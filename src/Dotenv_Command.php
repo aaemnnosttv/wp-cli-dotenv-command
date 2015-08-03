@@ -128,13 +128,7 @@ class Dotenv_Command extends WP_CLI_Command
             return;
         }
 
-        if ( false === $value ) {
-            WP_CLI::error('Invalid line format for key');
-        }
-        else {
-            WP_CLI::error("Key '$key' not found.");
-        }
-
+        WP_CLI::error("Key '$key' not found.");
     }
 
     /**
