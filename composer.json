@@ -1,7 +1,7 @@
 {
     "name": "aaemnnosttv/wp-cli-dotenv-command",
     "description": "Dotenv commands for WP-CLI",
-    "license": "GPL-2.0",
+    "license": "MIT",
     "authors": [
         {
             "name": "Evan Mattson",
