@@ -8,6 +8,9 @@
             "email": "me@aaemnnost.tv"
         }
     ],
+    "require": {
+        "php": ">=5.4"
+    },
     "autoload": {
         "classmap": ["src/"],
         "files": ["command.php", "src/functions.php"]
