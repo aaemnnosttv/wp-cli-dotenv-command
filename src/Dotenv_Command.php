@@ -90,6 +90,8 @@ class Dotenv_Command extends WP_CLI_Command
         if ( ! $interactive = \WP_CLI\Utils\get_flag_value( $assoc_args, 'interactive' ) )
             return;
 
+        $dotenv->load(); // reload the new copied data from template
+
         WP_CLI::line('Interactive init');
         WP_CLI::line('Specify a new value for each key, or leave blank for no change.');
 
