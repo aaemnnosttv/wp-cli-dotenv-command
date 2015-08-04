@@ -63,4 +63,26 @@ Initialize the environment file with some fresh salts provided by the wordpress.
 #### `regenerate`
 Same as `generate`, but will update all keys for salts with new values.
 
+# Installation
+Due to the nature of this command, it cannot be installed as a plugin and thus would not be useful to install as a project dependency.  Instead, the Dotenv Command is installed as a Composer package, and loaded by the local user's wp-cli config.
 
+ 
+Create the wp-cli user directory, if it doesn't already exist
+```
+mkdir ~/.wp-cli && cd ~/.wp-cli
+```
+Require the dotenv command package
+```
+composer require --no-dev --prefer-dist aaemnnosttv/wp-cli-dotenv-command:"^0.1"
+```
+Create the wp-cli config file, if it doesn't exist yet
+```
+touch config.yml
+```
+Load composer.  Edit the `config.yml` file and make sure `vendor/autoload.php` is being loaded under `require` like so
+```
+require:
+  - vendor/autoload.php
+```
+
+That's it!  Now you should see the `dotenv` command as an option when you run `wp` from any directory.
