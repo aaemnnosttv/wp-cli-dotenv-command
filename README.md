@@ -73,7 +73,7 @@ mkdir ~/.wp-cli && cd ~/.wp-cli
 ```
 Require the dotenv command package
 ```
-composer require --no-dev --prefer-dist aaemnnosttv/wp-cli-dotenv-command:"^0.1"
+composer require --prefer-dist aaemnnosttv/wp-cli-dotenv-command:"^0.1"
 ```
 Create the wp-cli config file, if it doesn't exist yet
 ```
