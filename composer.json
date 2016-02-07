@@ -12,6 +12,10 @@
     "require": {
         "php": ">=5.4"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^5.2",
+        "satooshi/php-coveralls": "^1.0"
+    },
     "autoload": {
         "classmap": ["src/"],
         "files": ["command.php", "src/functions.php"]
