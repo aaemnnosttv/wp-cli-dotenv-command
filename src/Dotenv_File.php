@@ -117,6 +117,8 @@ class Dotenv_File
     }
 
     /**
+     * Whether the file exists and is readable
+     *
      * @return bool
      */
     public function is_readable()

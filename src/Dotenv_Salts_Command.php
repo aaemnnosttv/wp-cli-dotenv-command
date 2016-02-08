@@ -1,4 +1,6 @@
-<?php namespace WP_CLI_Dotenv_Command;
+<?php
+
+namespace WP_CLI_Dotenv_Command;
 
 use WP_CLI;
 use WP_CLI_Command;

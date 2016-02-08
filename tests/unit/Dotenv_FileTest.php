@@ -10,7 +10,7 @@ class Dotenv_FileTest extends PHPUnit_Framework_TestCase
     public function it_loads_the_file()
     {
         $filepath = $this->get_fixture_path('env-basic');
-        $dotenv = new Dotenv_File($filepath);
+        $dotenv   = new Dotenv_File($filepath);
 
         $this->assertFileExists($dotenv->get_filepath());
         $this->assertTrue($dotenv->exists());
@@ -65,7 +65,7 @@ class Dotenv_FileTest extends PHPUnit_Framework_TestCase
     public function it_can_get_and_set_values_for_a_given_key()
     {
         $filepath = $this->get_fixture_path('env-basic');
-        $dotenv = new Dotenv_File($filepath);
+        $dotenv   = new Dotenv_File($filepath);
         $dotenv->load();
 
         $this->assertEquals('BAR', $dotenv->get('FOO'));
@@ -80,7 +80,7 @@ class Dotenv_FileTest extends PHPUnit_Framework_TestCase
     public function it_does_not_write_to_the_file_until_save_is_called()
     {
         $filepath = $this->copy_fixture('env-basic');
-        $dotenv = new Dotenv_File($filepath);
+        $dotenv   = new Dotenv_File($filepath);
         $dotenv->load();
 
         $this->assertNull($dotenv->get('SOME_KEY'));
@@ -96,13 +96,14 @@ class Dotenv_FileTest extends PHPUnit_Framework_TestCase
 
         unlink($filepath);
     }
+
     /**
      * @test
      */
     public function it_can_remove_a_line_by_the_key()
     {
         $filepath = $this->get_fixture_path('env-basic');
-        $dotenv = new Dotenv_File($filepath);
+        $dotenv   = new Dotenv_File($filepath);
         $dotenv->load();
 
         $this->assertEquals('BAR', $dotenv->get('FOO'));
@@ -118,7 +119,7 @@ class Dotenv_FileTest extends PHPUnit_Framework_TestCase
     public function it_can_count_how_many_total_lines_the_file_has()
     {
         $filepath = $this->get_fixture_path('env-one-line-one-comment');
-        $dotenv = new Dotenv_File($filepath);
+        $dotenv   = new Dotenv_File($filepath);
         $dotenv->load();
 
         $this->assertEquals(2, $dotenv->size());
