@@ -1,4 +1,6 @@
-<?php namespace WP_CLI_Dotenv_Command;
+<?php
+
+namespace WP_CLI_Dotenv_Command;
 
 use WP_CLI;
 
@@ -39,20 +41,6 @@ function get_filepath($assoc_args)
 }
 
 /**
- * Get a new Dotenv_File instance from CLI args
- *
- * @param $args
- *
- * @return Dotenv_File
- */
-function get_dotenv($args)
-{
-    $filepath = get_filepath($args);
-
-    return new Dotenv_File($filepath);
-}
-
-/**
  * Load the environment file, while ensuring read permissions
  * or die trying!
  *
@@ -62,19 +50,17 @@ function get_dotenv($args)
  */
 function get_dotenv_for_read_or_fail($args)
 {
-    $dotenv = get_dotenv($args);
+    $filepath = get_filepath($args);
 
-    if ( ! $dotenv->exists()) {
-        WP_CLI::error('File does not exist: ' . $dotenv->get_filepath());
+    try {
+        $dotenv = Dotenv_File::at($filepath);
+        $dotenv->load();
+    } catch (\Exception $e) {
+        WP_CLI::error($e->getMessage());
         exit;
     }
 
-    if ($dotenv->is_readable()) {
-        return $dotenv->load();
-    }
-
-    WP_CLI::error($dotenv->get_filepath() . ' is not readable! Check your file permissions.');
-    exit;
+    return $dotenv;
 }
 
 /**
@@ -87,14 +73,17 @@ function get_dotenv_for_read_or_fail($args)
  */
 function get_dotenv_for_write_or_fail($args)
 {
-    $dotenv = get_dotenv_for_read_or_fail($args);
+    $filepath = get_filepath($args);
 
-    if ($dotenv->is_writable()) {
-        return $dotenv;
-    } // already loaded
+    try {
+        $dotenv = Dotenv_File::writable($filepath);
+        $dotenv->load();
+    } catch (\Exception $e) {
+        WP_CLI::error($e->getMessage());
+        exit;
+    }
 
-    WP_CLI::error($dotenv->get_filepath() . ' is not writable! Check your file permissions.');
-    exit;
+    return $dotenv;
 }
 
 /**
@@ -110,7 +99,7 @@ function prompt($question, $default)
     try {
         $response = \cli\prompt($question, $default);
     } catch (\Exception $e) {
-        WP_CLI::line();
+        WP_CLI::error($e->getMessage());
 
         return false;
     }
