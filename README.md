@@ -1,5 +1,6 @@
-WP-CLI Dotenv Command
-=====================
+# WP-CLI Dotenv Command
+
+[![Travis Build](https://img.shields.io/travis/aaemnnosttv/wp-cli-dotenv-command/master.svg)](https://travis-ci.org/aaemnnosttv/wp-cli-dotenv-command)
 
 ```
 NAME
