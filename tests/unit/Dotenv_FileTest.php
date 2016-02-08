@@ -54,7 +54,9 @@ class Dotenv_FileTest extends PHPUnit_Framework_TestCase
      */
     public function it_throws_an_exception_if_the_file_is_not_writable()
     {
-        Dotenv_File::writable($this->get_fixture_path('env-unwritable'));
+        $filepath = $this->get_fixture_path('env-unwritable');
+        chmod($filepath, 0444);
+        Dotenv_File::writable($filepath);
     }
 
     /**
