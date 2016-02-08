@@ -18,7 +18,4 @@ script:
     - vendor/bin/phpunit
 
 after_script:
-    - if [ "$TRAVIS_BRANCH" == "master" ]; then php vendor/bin/coveralls -v; fi
-
-after_success:
-    - if [ "$TRAVIS_BRANCH" == "master" ]; then coveralls; fi
+    - if [ "$TRAVIS_BRANCH" == "master" ]; then vendor/bin/coveralls -v; fi
