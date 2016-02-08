@@ -22,6 +22,44 @@ class Dotenv_FileTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_has_a_named_constructor_for_the_file_AT_the_given_path()
+    {
+        $dotenv = Dotenv_File::at($this->get_fixture_path('env-basic'));
+
+        $this->assertInstanceOf(Dotenv_File::class, $dotenv);
+    }
+
+    /**
+     * @test
+     * @expectedException RuntimeException
+     */
+    public function it_throws_an_exception_if_the_file_is_not_readable()
+    {
+        Dotenv_File::at($this->get_fixture_path('env-unreadable'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_has_a_named_constructor_for_the_writable_file_at_the_given_path()
+    {
+        $dotenv = Dotenv_File::writable($this->get_fixture_path('env-basic'));
+
+        $this->assertInstanceOf(Dotenv_File::class, $dotenv);
+    }
+
+    /**
+     * @test
+     * @expectedException RuntimeException
+     */
+    public function it_throws_an_exception_if_the_file_is_not_writable()
+    {
+        Dotenv_File::writable($this->get_fixture_path('env-unwritable'));
+    }
+
+    /**
+     * @test
+     */
     public function it_can_get_and_set_values_for_a_given_key()
     {
         $filepath = $this->get_fixture_path('env-basic');

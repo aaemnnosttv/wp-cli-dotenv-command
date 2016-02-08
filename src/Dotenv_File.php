@@ -48,6 +48,39 @@ class Dotenv_File
      *
      * @return static
      */
+    public static function at($filepath)
+    {
+        $dotenv = new static($filepath);
+
+        if (! $dotenv->is_readable()) {
+            throw new \RuntimeException("File not readable at $filepath");
+        }
+
+        return $dotenv;
+    }
+
+    /**
+     * @param $filepath
+     *
+     * @return Dotenv_File
+     */
+    public static function writable($filepath)
+    {
+        $dotenv = static::at($filepath);
+
+        if (! $dotenv->is_writable()) {
+            throw new \RuntimeException("File not writable at $filepath");
+        }
+
+        return $dotenv;
+    }
+
+
+    /**
+     * @param $filepath
+     *
+     * @return static
+     */
     public static function create($filepath)
     {
         $dotenv = new static($filepath);
