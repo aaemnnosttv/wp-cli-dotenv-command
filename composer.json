@@ -14,12 +14,6 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^5.2",
-        "satooshi/php-coveralls": "^1.0",
-        "symfony/yaml": "2.7.*",
-        "symfony/console": "2.7.*",
-        "symfony/config": "2.7.*",
-        "symfony/filesystem": "2.7.*",
-        "symfony/event-dispatcher": "2.7.*",
         "wp-cli/wp-cli": "^0.22.0"
     },
     "autoload": {

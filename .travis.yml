@@ -14,8 +14,4 @@ before_script:
     - composer install
 
 script:
-    - mkdir -p build/logs
     - vendor/bin/phpunit
-
-after_script:
-    - if [ "$TRAVIS_BRANCH" == "master" ]; then vendor/bin/coveralls -v; fi
