@@ -11,11 +11,11 @@ notifications:
         on_failure: change
 
 before_script:
-    - composer install --dev
+    - composer install
 
 script:
     - mkdir -p build/logs
-    - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+    - vendor/bin/phpunit
 
 after_script:
     - if [ "$TRAVIS_BRANCH" == "master" ]; then php vendor/bin/coveralls -v; fi
