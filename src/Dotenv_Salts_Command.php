@@ -23,36 +23,35 @@ class Dotenv_Salts_Command extends WP_CLI_Command
      * @param $_
      * @param $assoc_args
      */
-    function generate( $_, $assoc_args )
+    function generate($_, $assoc_args)
     {
-        $dotenv = get_dotenv_for_write_or_fail( $assoc_args );
-        $set    = $skipped = [ ];
+        $dotenv = get_dotenv_for_write_or_fail($assoc_args);
+        $set    = $skipped = [];
 
-        if ( ! $salts = Salts::fetch_array() ) return;
+        if ( ! $salts = Salts::fetch_array()) {
+            return;
+        }
 
-        foreach ( $salts as $key => $value )
-        {
-            if ( $dotenv->has_key( $key ) )
-            {
-                WP_CLI::line( "The '$key' already exists, skipping." );
-                $skipped[ ] = $key;
+        foreach ($salts as $key => $value) {
+            if ($dotenv->has_key($key)) {
+                WP_CLI::line("The '$key' already exists, skipping.");
+                $skipped[] = $key;
                 continue;
             }
 
-            $dotenv->set( $key, $value );
-            $set[ ] = $key;
+            $dotenv->set($key, $value);
+            $set[] = $key;
         }
 
         $dotenv->save();
 
-        if ( count($set) === count($salts) ) {
+        if (count($set) === count($salts)) {
             WP_CLI::success('Salts generated.');
-        }
-        elseif ( $set ) {
+        } elseif ($set) {
             WP_CLI::success(count($set) . ' salts set.');
         }
 
-        if ( $skipped ) {
+        if ($skipped) {
             WP_CLI::warning('Some keys were already defined in the environment file.');
             WP_CLI::line("Use 'dotenv salts regenerate' to update them.");
         }
@@ -71,13 +70,15 @@ class Dotenv_Salts_Command extends WP_CLI_Command
      * @param $_
      * @param $assoc_args
      */
-    function regenerate( $_, $assoc_args )
+    function regenerate($_, $assoc_args)
     {
         $dotenv = get_dotenv_for_write_or_fail($assoc_args);
 
-        if ( ! $salts = Salts::fetch_array() ) return;
+        if ( ! $salts = Salts::fetch_array()) {
+            return;
+        }
 
-        foreach ( $salts as $key => $value ) {
+        foreach ($salts as $key => $value) {
             $dotenv->set($key, $value);
         }
 

@@ -1,6 +1,5 @@
 <?php namespace WP_CLI_Dotenv_Command;
 
-
 /**
  * Class Salts
  * @package WP_CLI_Dotenv_Command
@@ -23,14 +22,15 @@ class Salts
     public static function fetch_array()
     {
         // read in each line as an array
-        $response = file( static::GENERATOR_URL );
+        $response = file(static::GENERATOR_URL);
 
-        if ( ! is_array( $response ) ) {
+        if ( ! is_array($response)) {
             WP_CLI::error('There was a problem fetching salts from the WordPress generator service.');
+
             return;
         }
 
-        return (array) static::parse_php_to_array( $response );
+        return (array)static::parse_php_to_array($response);
     }
 
     /**
@@ -40,31 +40,30 @@ class Salts
      *
      * @return array
      */
-    public static function parse_php_to_array( array $response )
+    public static function parse_php_to_array(array $response)
     {
-        $salts = [ ];
+        $salts = [];
 
-        foreach ( $response as $line )
-        {
+        foreach ($response as $line) {
             // capture everything between single quotes
-            preg_match_all( self::PATTERN_CAPTURE, $line, $matches );
+            preg_match_all(self::PATTERN_CAPTURE, $line, $matches);
 
             // 0 - complete match
             // 1 - captures
-            if ( ! isset( $matches[ 1 ] ) ) {
+            if ( ! isset($matches[ 1 ])) {
                 continue;
             }
 
             $captures = $matches[ 1 ];
 
-            $constant_name  = array_shift( $captures );
-            $constant_value = array_shift( $captures );
+            $constant_name  = array_shift($captures);
+            $constant_value = array_shift($captures);
 
-            if ( $constant_name ) {
+            if ($constant_name) {
                 $salts[ $constant_name ] = $constant_value;
             }
 
-            unset( $matches );
+            unset($matches);
         }
 
         return $salts;

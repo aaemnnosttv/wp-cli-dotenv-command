@@ -37,7 +37,7 @@ class Dotenv_File
      *
      * @param $filepath
      */
-    public function __construct( $filepath )
+    public function __construct($filepath)
     {
         $this->filepath = $filepath;
         $this->filename = basename($filepath);
@@ -48,12 +48,12 @@ class Dotenv_File
      *
      * @return static
      */
-    public static function create( $filepath )
+    public static function create($filepath)
     {
-        $dotenv = new static( $filepath );
+        $dotenv = new static($filepath);
 
-        if ( ! $dotenv->exists() ) {
-            touch( $filepath );
+        if ( ! $dotenv->exists()) {
+            touch($filepath);
         }
 
         return $dotenv;
@@ -102,9 +102,9 @@ class Dotenv_File
     /**
      * @param $value
      */
-    public function add_line( $value )
+    public function add_line($value)
     {
-        array_push($this->lines, (string) $value);
+        array_push($this->lines, (string)$value);
     }
 
     /**
@@ -112,9 +112,10 @@ class Dotenv_File
      *
      * @return string
      */
-    public function get_pattern_for_key( $key )
+    public function get_pattern_for_key($key)
     {
         $preg_key = preg_quote(trim($key), '/');
+
         return sprintf(static::PATTERN_KEY_CAPTURE_FORMAT, $preg_key);
     }
 
@@ -124,6 +125,7 @@ class Dotenv_File
     public function load()
     {
         $this->lines = file($this->filepath, FILE_IGNORE_NEW_LINES);
+
         return $this;
     }
 
@@ -133,6 +135,7 @@ class Dotenv_File
     public function save()
     {
         $contents = join(PHP_EOL, $this->lines) . PHP_EOL;
+
         return file_put_contents($this->filepath, $contents);
     }
 
@@ -141,7 +144,7 @@ class Dotenv_File
      */
     public function size()
     {
-        return count( $this->lines );
+        return count($this->lines);
     }
 
     /**
@@ -156,12 +159,10 @@ class Dotenv_File
      *                              false if line does not have `=`, or null if
      *                              null if no match was found
      */
-    public function get( $key )
+    public function get($key)
     {
-        foreach ( $this->lines as &$line )
-        {
-            if ( $this->is_key_match( $key, $line ) )
-            {
+        foreach ($this->lines as &$line) {
+            if ($this->is_key_match($key, $line)) {
                 return $this->parse_line_value($line);
             }
         }
@@ -176,22 +177,20 @@ class Dotenv_File
      *
      * @return bool
      */
-    public function set( $key, $value )
+    public function set($key, $value)
     {
-        $set = $replaced = false;
+        $set      = $replaced = false;
         $new_line = format_line($key, $value);
 
-        foreach ( $this->lines as &$line )
-        {
-            if ( $this->is_key_match( $key, $line ) )
-            {
+        foreach ($this->lines as &$line) {
+            if ($this->is_key_match($key, $line)) {
                 $line = $new_line;
-                $set = $replaced = true;
+                $set  = $replaced = true;
             }
         }
 
         // if it wasn't replaced, append it
-        if ( ! $replaced ) {
+        if ( ! $replaced) {
             $this->add_line($new_line);
             $set = true;
         }
@@ -204,14 +203,14 @@ class Dotenv_File
      *
      * @return int Lines removed
      */
-    public function remove( $key )
+    public function remove($key)
     {
         $removed = 0;
 
-        $this->filter(function($line) use ($key, &$removed)
-        {
-            if ( $this->is_key_match($key, $line) ) {
+        $this->filter(function ($line) use ($key, &$removed) {
+            if ($this->is_key_match($key, $line)) {
                 $removed++;
+
                 return false;
             }
 
@@ -226,7 +225,7 @@ class Dotenv_File
      *
      * @return $this
      */
-    public function map( callable $callback )
+    public function map(callable $callback)
     {
         $this->lines = array_map($callback, $this->lines);
 
@@ -238,7 +237,7 @@ class Dotenv_File
      *
      * @return $this
      */
-    public function filter( callable $callback )
+    public function filter(callable $callback)
     {
         $this->lines = array_filter($this->lines, $callback);
 
@@ -250,19 +249,21 @@ class Dotenv_File
      *
      * @return bool|string
      */
-    protected function parse_line_value( $line )
+    protected function parse_line_value($line)
     {
         // key = value
         // key=value
         // key = "value"
         // key='value' << our format
 
-        if ( ! strpos($line, '=') ) return false;
+        if ( ! strpos($line, '=')) {
+            return false;
+        }
 
         // break the line at the = into 2 pieces (key, value)
         $pieces = explode('=', $line, 2);
         // clean off any extra whitespace or wrapping quotes
-        $value = trim( array_pop($pieces), '\'""' );
+        $value = trim(array_pop($pieces), '\'""');
 
         return $value;
     }
@@ -273,9 +274,9 @@ class Dotenv_File
      *
      * @return int
      */
-    protected function is_key_match( $key, $line )
+    protected function is_key_match($key, $line)
     {
-        return preg_match( $this->get_pattern_for_key( $key ), $line );
+        return preg_match($this->get_pattern_for_key($key), $line);
     }
 
     /**
@@ -285,12 +286,12 @@ class Dotenv_File
      *
      * @return bool
      */
-    public function has_key( $key )
+    public function has_key($key)
     {
-        foreach ( $this->lines as $line )
-        {
-            if ( $this->is_key_match($key, $line) )
+        foreach ($this->lines as $line) {
+            if ($this->is_key_match($key, $line)) {
                 return true;
+            }
         }
 
         return false;
@@ -301,12 +302,12 @@ class Dotenv_File
      *
      * @return bool
      */
-    public function get_key_for_line( $line )
+    public function get_key_for_line($line)
     {
-        $pieces = explode( '=', $line, 2 );
-        $pieces = array_map( 'trim', $pieces );
+        $pieces = explode('=', $line, 2);
+        $pieces = array_map('trim', $pieces);
 
-        return array_shift( $pieces );
+        return array_shift($pieces);
     }
 
     /**
@@ -314,34 +315,32 @@ class Dotenv_File
      *
      * @return array
      */
-    public function get_pair_for_line( $line )
+    public function get_pair_for_line($line)
     {
-        $pieces = explode( '=', $line, 2 );
-        $pieces = array_map( 'trim', $pieces );
+        $pieces = explode('=', $line, 2);
+        $pieces = array_map('trim', $pieces);
 
-        $key   = array_shift( $pieces );
-        $value = array_shift( $pieces );
+        $key   = array_shift($pieces);
+        $value = array_shift($pieces);
 
-        if ( 0 === strpos( $value, '\'' ) ) {
-            $value = trim( $value, '\'' );
+        if (0 === strpos($value, '\'')) {
+            $value = trim($value, '\'');
+        } elseif (0 === strpos($value, '"')) {
+            $value = trim($value, '"');
         }
-        elseif ( 0 === strpos( $value, '"' ) ) {
-            $value = trim( $value, '"' );
-        }
 
-        return compact('key','value');
+        return compact('key', 'value');
     }
 
     public function get_pairs()
     {
-        $pairs = [ ];
+        $pairs = [];
 
-        $this->map(function($line) use (&$pairs)
-        {
+        $this->map(function ($line) use (&$pairs) {
             $pair = $this->get_pair_for_line($line);
 
-            if ( strlen($pair['key']) ) {
-                $pairs[ $pair['key'] ] = $pair['value'];
+            if (strlen($pair[ 'key' ])) {
+                $pairs[ $pair[ 'key' ] ] = $pair[ 'value' ];
             }
         });
 

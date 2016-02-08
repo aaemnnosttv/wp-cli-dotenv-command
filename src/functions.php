@@ -8,7 +8,7 @@ use WP_CLI;
  *
  * @return string
  */
-function format_line( $key, $value )
+function format_line($key, $value)
 {
     return sprintf(Dotenv_File::LINE_FORMAT, $key, $value);
 }
@@ -20,18 +20,19 @@ function format_line( $key, $value )
  *
  * @return string
  */
-function get_filepath( $assoc_args )
+function get_filepath($assoc_args)
 {
-    $file = \WP_CLI\Utils\get_flag_value( $assoc_args, 'file', '.env' );
+    $file = \WP_CLI\Utils\get_flag_value($assoc_args, 'file', '.env');
 
-    if ( $file instanceof Dotenv_File )
+    if ($file instanceof Dotenv_File) {
         return $file->get_filepath();
+    }
 
     // if relative path, or just a file name was passed
-    $dirname  = dirname( $file );
-    $filename = basename( $file );
+    $dirname  = dirname($file);
+    $filename = basename($file);
     $relpath  = $dirname ? "/$dirname" : '';
-    $path     = realpath( getcwd() . $relpath );
+    $path     = realpath(getcwd() . $relpath);
     $path .= "/$filename";
 
     return $path;
@@ -44,11 +45,11 @@ function get_filepath( $assoc_args )
  *
  * @return Dotenv_File
  */
-function get_dotenv( $args )
+function get_dotenv($args)
 {
-    $filepath = get_filepath( $args );
+    $filepath = get_filepath($args);
 
-    return new Dotenv_File( $filepath );
+    return new Dotenv_File($filepath);
 }
 
 /**
@@ -59,16 +60,16 @@ function get_dotenv( $args )
  *
  * @return Dotenv_File
  */
-function get_dotenv_for_read_or_fail( $args )
+function get_dotenv_for_read_or_fail($args)
 {
     $dotenv = get_dotenv($args);
 
-    if ( ! $dotenv->exists() ) {
+    if ( ! $dotenv->exists()) {
         WP_CLI::error('File does not exist: ' . $dotenv->get_filepath());
         exit;
     }
 
-    if ( $dotenv->is_readable() ) {
+    if ($dotenv->is_readable()) {
         return $dotenv->load();
     }
 
@@ -84,11 +85,13 @@ function get_dotenv_for_read_or_fail( $args )
  *
  * @return Dotenv_File
  */
-function get_dotenv_for_write_or_fail( $args )
+function get_dotenv_for_write_or_fail($args)
 {
     $dotenv = get_dotenv_for_read_or_fail($args);
 
-    if ( $dotenv->is_writable() ) return $dotenv; // already loaded
+    if ($dotenv->is_writable()) {
+        return $dotenv;
+    } // already loaded
 
     WP_CLI::error($dotenv->get_filepath() . ' is not writable! Check your file permissions.');
     exit;
@@ -102,12 +105,13 @@ function get_dotenv_for_write_or_fail( $args )
  *
  * @return bool
  */
-function prompt( $question, $default )
+function prompt($question, $default)
 {
     try {
-        $response = \cli\prompt( $question, $default );
-    } catch( \Exception $e ) {
+        $response = \cli\prompt($question, $default);
+    } catch (\Exception $e) {
         WP_CLI::line();
+
         return false;
     }
 

@@ -1,12 +1,13 @@
-<?php namespace WP_CLI_Dotenv_Command;
+<?php
+
+namespace WP_CLI_Dotenv_Command;
 
 use WP_CLI;
-use WP_CLI\Formatter;
 use WP_CLI_Command;
+use WP_CLI\Formatter;
 
 /**
  * Manage a .env file
- * @package WP_CLI_Dotenv_Command
  */
 class Dotenv_Command extends WP_CLI_Command
 {
@@ -33,28 +34,30 @@ class Dotenv_Command extends WP_CLI_Command
      * @param $_
      * @param $assoc_args
      */
-    public function init( $_, $assoc_args )
+    public function init($_, $assoc_args)
     {
         $filepath = get_filepath($assoc_args);
 
-        if ( file_exists( $filepath ) ) {
+        if (file_exists($filepath)) {
             WP_CLI::error("Environment file already exists at: $filepath");
+
             return;
         }
 
-        $dotenv = Dotenv_File::create( $filepath );
+        $dotenv = Dotenv_File::create($filepath);
 
-        if ( ! $dotenv->exists() ) {
+        if ( ! $dotenv->exists()) {
             WP_CLI::error('Failed to create environment file at: ' . $dotenv->get_filepath());
+
             return;
         }
 
-        if ( $template = \WP_CLI\Utils\get_flag_value( $assoc_args, 'template' ) ) {
+        if ($template = \WP_CLI\Utils\get_flag_value($assoc_args, 'template')) {
             $this->init_from_template($dotenv, $template, $assoc_args);
         }
 
-        if ( \WP_CLI\Utils\get_flag_value( $assoc_args, 'with-salts' ) ) {
-            WP_CLI::run_command( [ 'dotenv', 'salts', 'generate' ], [ 'file' => $dotenv ] );
+        if (\WP_CLI\Utils\get_flag_value($assoc_args, 'with-salts')) {
+            WP_CLI::run_command(['dotenv', 'salts', 'generate'], ['file' => $dotenv]);
         }
 
         WP_CLI::success("$filepath created.");
@@ -65,30 +68,34 @@ class Dotenv_Command extends WP_CLI_Command
      * @param $template
      * @param $assoc_args
      */
-    protected function init_from_template( Dotenv_File &$dotenv, $template, $assoc_args )
+    protected function init_from_template(Dotenv_File &$dotenv, $template, $assoc_args)
     {
         $template_path = get_filepath(['file' => $template]);
 
-        if ( ! file_exists($template_path) ) {
+        if ( ! file_exists($template_path)) {
             WP_CLI::error("Template file does not exist at: $template_path");
+
             return;
         }
-        if ( ! is_readable($template_path) ) {
-            WP_CLI::error( "Template file is not readable at: $template_path" );
+        if ( ! is_readable($template_path)) {
+            WP_CLI::error("Template file is not readable at: $template_path");
+
             return;
         }
-        if ( ! $dotenv->is_writable() ) {
+        if ( ! $dotenv->is_writable()) {
             WP_CLI::error('Environment file is not readable at: ' . $dotenv->get_filepath());
+
             return;
         }
 
         WP_CLI::line("Initializing from template: $template_path");
 
-        copy( $template_path, $dotenv->get_filepath() );
+        copy($template_path, $dotenv->get_filepath());
 
         // we can't use WP-CLI --prompt because we're working off the template, not the synopsis
-        if ( ! $interactive = \WP_CLI\Utils\get_flag_value( $assoc_args, 'interactive' ) )
+        if ( ! $interactive = \WP_CLI\Utils\get_flag_value($assoc_args, 'interactive')) {
             return;
+        }
 
         $dotenv->load(); // reload the new copied data from template
 
@@ -96,17 +103,20 @@ class Dotenv_Command extends WP_CLI_Command
         WP_CLI::line('Specify a new value for each key, or leave blank for no change.');
 
         // iterate over each line and prompt for a new value
-        $dotenv->map(function( $line ) use ( $dotenv )
-        {
+        $dotenv->map(function ($line) use ($dotenv) {
             $pair = $dotenv->get_pair_for_line($line);
 
-            if ( ! $pair['key'] ) return $line;
+            if ( ! $pair[ 'key' ]) {
+                return $line;
+            }
 
-            $user_value = \cli\prompt( $pair[ 'key' ], $pair[ 'value' ] );
+            $user_value = \cli\prompt($pair[ 'key' ], $pair[ 'value' ]);
 
-            if ( ! strlen($user_value) ) return $line;
+            if ( ! strlen($user_value)) {
+                return $line;
+            }
 
-            return format_line( $pair[ 'key' ], $user_value );
+            return format_line($pair[ 'key' ], $user_value);
         });
 
         $dotenv->save();
@@ -121,14 +131,14 @@ class Dotenv_Command extends WP_CLI_Command
      *
      * @synopsis <key> <value>
      *
-     * @when before_wp_load
+     * @when     before_wp_load
      *
      * @param $_
      * @param $assoc_args
      */
-    public function set( $_, $assoc_args )
+    public function set($_, $assoc_args)
     {
-        list( $key, $value ) = $_;
+        list($key, $value) = $_;
 
         $dotenv = get_dotenv_for_write_or_fail($assoc_args);
         $dotenv->set($key, $value);
@@ -145,21 +155,21 @@ class Dotenv_Command extends WP_CLI_Command
      *
      * @synopsis <key>
      *
-     * @when before_wp_load
+     * @when     before_wp_load
      *
      * @param $_
      * @param $assoc_args
      */
-    public function get( $_, $assoc_args )
+    public function get($_, $assoc_args)
     {
-        list( $key ) = $_;
+        list($key) = $_;
 
-        $dotenv = get_dotenv_for_read_or_fail( $assoc_args );
-        $value = $dotenv->get( $key );
+        $dotenv = get_dotenv_for_read_or_fail($assoc_args);
+        $value  = $dotenv->get($key);
 
-        if ( $value || ! in_array( $value, [ false, null ], true ) )
-        {
-            WP_CLI::line( $value );
+        if ($value || ! in_array($value, [false, null], true)) {
+            WP_CLI::line($value);
+
             return;
         }
 
@@ -174,18 +184,17 @@ class Dotenv_Command extends WP_CLI_Command
      *
      * @synopsis <key>...
      *
-     * @when before_wp_load
+     * @when     before_wp_load
      *
      * @param $_
      * @param $assoc_args
      */
-    public function delete( $_, $assoc_args )
+    public function delete($_, $assoc_args)
     {
-        $dotenv = get_dotenv_for_write_or_fail( $assoc_args );
+        $dotenv = get_dotenv_for_write_or_fail($assoc_args);
 
-        foreach ( $_ as $key )
-        {
-            if ( $result = $dotenv->remove($key) ) {
+        foreach ($_ as $key) {
+            if ($result = $dotenv->remove($key)) {
                 WP_CLI::success("Removed '$key'");
             } else {
                 WP_CLI::warning("No line found for key: '$key'");
@@ -206,33 +215,32 @@ class Dotenv_Command extends WP_CLI_Command
      * : Path to the environment file.  Default: '.env'
      *
      * @subcommand list
-     * @when before_wp_load
+     * @when       before_wp_load
      *
      * @param $_
      * @param $assoc_args
      */
-    public function _list( $_, $assoc_args )
+    public function _list($_, $assoc_args)
     {
-        $dotenv = get_dotenv_for_read_or_fail( $assoc_args );
-        $keys   = \WP_CLI\Utils\get_flag_value( $assoc_args, 'keys' );
-        $keys   = is_string( $keys ) ? explode( ',', $keys ) : $keys;
-        $items  = [ ];
+        $dotenv = get_dotenv_for_read_or_fail($assoc_args);
+        $keys   = \WP_CLI\Utils\get_flag_value($assoc_args, 'keys');
+        $keys   = is_string($keys) ? explode(',', $keys) : $keys;
+        $items  = [];
 
-        foreach ( $dotenv->get_pairs() as $key => $value )
-        {
+        foreach ($dotenv->get_pairs() as $key => $value) {
             // Skip if not requested
-            if ( ! empty( $keys ) && ! in_array( $key, $keys ) ) {
+            if ( ! empty($keys) && ! in_array($key, $keys)) {
                 continue;
             }
 
-            $items[ ] = (object) compact('key', 'value');
+            $items[] = (object)compact('key', 'value');
         }
 
-        $fields = \WP_CLI\Utils\get_flag_value( $assoc_args, 'fields', ['key','value'] );
-        $fields = is_string($fields) ? explode( ',', $fields ) : $fields;
+        $fields = \WP_CLI\Utils\get_flag_value($assoc_args, 'fields', ['key', 'value']);
+        $fields = is_string($fields) ? explode(',', $fields) : $fields;
 
-        $formatter = new Formatter( $assoc_args, $fields );
-        $formatter->display_items( $items );
+        $formatter = new Formatter($assoc_args, $fields);
+        $formatter->display_items($items);
     }
 
 }
