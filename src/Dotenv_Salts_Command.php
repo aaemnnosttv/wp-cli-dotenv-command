@@ -7,7 +7,6 @@ use WP_CLI_Command;
 
 /**
  * Manage WordPress salts in .env format
- * @package WP_CLI_Dotenv_Command
  */
 class Dotenv_Salts_Command extends WP_CLI_Command
 {
@@ -30,7 +29,11 @@ class Dotenv_Salts_Command extends WP_CLI_Command
         $dotenv = get_dotenv_for_write_or_fail($assoc_args);
         $set    = $skipped = [];
 
-        if ( ! $salts = Salts::fetch_array()) {
+        try {
+            $salts = Salts::fetch_array();
+        } catch (\Exception $e) {
+            WP_CLI::error($e->getMessage());
+
             return;
         }
 
@@ -76,7 +79,11 @@ class Dotenv_Salts_Command extends WP_CLI_Command
     {
         $dotenv = get_dotenv_for_write_or_fail($assoc_args);
 
-        if ( ! $salts = Salts::fetch_array()) {
+        try {
+            $salts = Salts::fetch_array();
+        } catch (\Exception $e) {
+            WP_CLI::error($e->getMessage());
+
             return;
         }
 
