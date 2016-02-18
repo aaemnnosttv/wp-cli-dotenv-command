@@ -54,7 +54,7 @@ class Dotenv_Salts_Command extends WP_CLI_Command
         }
 
         if ($skipped) {
-            WP_CLI::warning('Some keys were already defined in the environment file.');
+            WP_CLI::line('Some keys were already defined in the environment file.');
             WP_CLI::line("Use 'dotenv salts regenerate' to update them.");
         }
     }
