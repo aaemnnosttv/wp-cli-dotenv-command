@@ -18,26 +18,25 @@ function format_line($key, $value)
 /**
  * Get the absolute path for the .env file
  *
- * @param $assoc_args
+ * @param $file
  *
  * @return string
  */
-function get_filepath($assoc_args)
+function get_filepath($file)
 {
-    $file = \WP_CLI\Utils\get_flag_value($assoc_args, 'file', '.env');
-
-    if ($file instanceof Dotenv_File) {
-        return $file->get_filepath();
+    if (file_exists($file)) {
+        return $file;
     }
 
-    // if relative path, or just a file name was passed
     $dirname  = dirname($file);
     $filename = basename($file);
     $relpath  = $dirname ? "/$dirname" : '';
-    $path     = realpath(getcwd() . $relpath);
-    $path .= "/$filename";
+    $path     = getcwd() . "$relpath/$filename";
 
-    return $path;
+    /**
+     * realpath will return false if path does not exist
+     */
+    return realpath($path) ?: $path;
 }
 
 /**
@@ -54,13 +53,11 @@ function get_dotenv_for_read_or_fail($args)
 
     try {
         $dotenv = Dotenv_File::at($filepath);
-        $dotenv->load();
+        return $dotenv->load();
     } catch (\Exception $e) {
         WP_CLI::error($e->getMessage());
         exit;
     }
-
-    return $dotenv;
 }
 
 /**
