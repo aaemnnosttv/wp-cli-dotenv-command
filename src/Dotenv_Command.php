@@ -11,6 +11,18 @@ use WP_CLI\Formatter;
  */
 class Dotenv_Command extends WP_CLI_Command
 {
+    /**
+     * @var AssocArgs
+     */
+    protected $args;
+
+    /**
+     * @param $args array All arguments passed to the sub-command method
+     */
+    protected function init_args($args)
+    {
+        $this->args = new AssocArgs($args[1]);
+    }
 
     /**
      * Initialize the environment file
