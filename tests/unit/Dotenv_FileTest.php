@@ -126,6 +126,19 @@ class Dotenv_FileTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function it_can_return_an_array_of_key_value_line_pairs()
+    {
+        $filepath = $this->get_fixture_path('env-basic');
+        $dotenv   = new Dotenv_File($filepath);
+        $dotenv->load();
+
+        $this->assertSame($dotenv->get_pairs(), ['FOO' => 'BAR']);
+    }
+
+
+    /**
      * Copies the fixture file to a new file with a unique name
      *
      * @param $filename
