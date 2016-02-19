@@ -48,7 +48,8 @@ class Dotenv_Command extends WP_CLI_Command
      */
     public function init($_, $assoc_args)
     {
-        $filepath = get_filepath($assoc_args);
+        $this->init_args(func_get_args());
+        $filepath = get_filepath($this->args->file);
 
         if (file_exists($filepath)) {
             WP_CLI::error("Environment file already exists at: $filepath");
@@ -150,9 +151,10 @@ class Dotenv_Command extends WP_CLI_Command
      */
     public function set($_, $assoc_args)
     {
+        $this->init_args(func_get_args());
         list($key, $value) = $_;
 
-        $dotenv = get_dotenv_for_write_or_fail($assoc_args);
+        $dotenv = get_dotenv_for_write_or_fail($this->args->file);
         $dotenv->set($key, $value);
         $dotenv->save();
 
@@ -174,9 +176,10 @@ class Dotenv_Command extends WP_CLI_Command
      */
     public function get($_, $assoc_args)
     {
+        $this->init_args(func_get_args());
         list($key) = $_;
 
-        $dotenv = get_dotenv_for_read_or_fail($assoc_args);
+        $dotenv = get_dotenv_for_read_or_fail($this->args->file);
         $value  = $dotenv->get($key);
 
         if ($value || ! in_array($value, [false, null], true)) {
@@ -203,7 +206,8 @@ class Dotenv_Command extends WP_CLI_Command
      */
     public function delete($_, $assoc_args)
     {
-        $dotenv = get_dotenv_for_write_or_fail($assoc_args);
+        $this->init_args(func_get_args());
+        $dotenv = get_dotenv_for_write_or_fail($this->args->file);
 
         foreach ($_ as $key) {
             if ($result = $dotenv->remove($key)) {
@@ -234,9 +238,9 @@ class Dotenv_Command extends WP_CLI_Command
      */
     public function _list($_, $assoc_args)
     {
-        $dotenv = get_dotenv_for_read_or_fail($assoc_args);
-        $keys   = \WP_CLI\Utils\get_flag_value($assoc_args, 'keys');
-        $keys   = is_string($keys) ? explode(',', $keys) : $keys;
+        $this->init_args(func_get_args());
+        $dotenv = get_dotenv_for_read_or_fail($this->args->file);
+        $keys   = is_string($this->args->keys) ? explode(',', $this->args->keys) : $this->args->keys;
         $items  = [];
 
         foreach ($dotenv->get_pairs() as $key => $value) {
