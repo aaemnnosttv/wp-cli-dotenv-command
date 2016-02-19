@@ -51,7 +51,7 @@ class Dotenv_Command extends WP_CLI_Command
         $this->init_args(func_get_args());
         $filepath = get_filepath($this->args->file);
 
-        if (file_exists($filepath)) {
+        if (file_exists($filepath) && ! $this->get_flag('force')) {
             WP_CLI::error("Environment file already exists at: $filepath");
 
             return;
@@ -65,12 +65,12 @@ class Dotenv_Command extends WP_CLI_Command
             return;
         }
 
-        if ($template = \WP_CLI\Utils\get_flag_value($assoc_args, 'template')) {
-            $this->init_from_template($dotenv, $template, $assoc_args);
+        if ($this->args->template) {
+            $this->init_from_template($dotenv, $this->args->template);
         }
 
-        if (\WP_CLI\Utils\get_flag_value($assoc_args, 'with-salts')) {
-            WP_CLI::run_command(['dotenv', 'salts', 'generate'], ['file' => $dotenv]);
+        if ($this->get_flag('with-salts')) {
+            WP_CLI::run_command(['dotenv', 'salts', 'generate'], ['file' => $dotenv->get_filepath()]);
         }
 
         WP_CLI::success("$filepath created.");
@@ -79,19 +79,19 @@ class Dotenv_Command extends WP_CLI_Command
     /**
      * @param $dotenv
      * @param $template
-     * @param $assoc_args
      */
-    protected function init_from_template(Dotenv_File &$dotenv, $template, $assoc_args)
+    protected function init_from_template(Dotenv_File &$dotenv, $template)
     {
-        $template_path = get_filepath(['file' => $template]);
+        $template_path   = get_filepath($template);
+        $dotenv_template = new Dotenv_File($template_path);
 
-        if ( ! file_exists($template_path)) {
-            WP_CLI::error("Template file does not exist at: $template_path");
+        if ( ! $dotenv_template->exists()) {
+            WP_CLI::error("Template file does not exist at: " . $dotenv_template->get_filepath());
 
             return;
         }
-        if ( ! is_readable($template_path)) {
-            WP_CLI::error("Template file is not readable at: $template_path");
+        if ( ! $dotenv_template->is_readable()) {
+            WP_CLI::error("Template file is not readable at: " . $dotenv_template->get_filepath());
 
             return;
         }
@@ -101,12 +101,12 @@ class Dotenv_Command extends WP_CLI_Command
             return;
         }
 
-        WP_CLI::line("Initializing from template: $template_path");
+        WP_CLI::line('Initializing from template: ' . $dotenv_template->get_filepath());
 
-        copy($template_path, $dotenv->get_filepath());
+        copy($dotenv_template->get_filepath(), $dotenv->get_filepath());
 
         // we can't use WP-CLI --prompt because we're working off the template, not the synopsis
-        if ( ! $interactive = \WP_CLI\Utils\get_flag_value($assoc_args, 'interactive')) {
+        if ( ! $interactive = $this->get_flag('interactive')) {
             return;
         }
 
@@ -116,10 +116,8 @@ class Dotenv_Command extends WP_CLI_Command
         WP_CLI::line('Specify a new value for each key, or leave blank for no change.');
 
         // iterate over each line and prompt for a new value
-        $dotenv->map(function ($line) use ($dotenv) {
-            $pair = $dotenv->get_pair_for_line($line);
-
-            if ( ! $pair[ 'key' ]) {
+        $dotenv->transform(function ($line) use ($dotenv) {
+            if ( ! $pair = $dotenv->get_pair_for_line($line)) {
                 return $line;
             }
 
@@ -130,9 +128,7 @@ class Dotenv_Command extends WP_CLI_Command
             }
 
             return format_line($pair[ 'key' ], $user_value);
-        });
-
-        $dotenv->save();
+        })->save();
     }
 
     /**
