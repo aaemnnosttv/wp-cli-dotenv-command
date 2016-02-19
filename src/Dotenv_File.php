@@ -85,6 +85,9 @@ class Dotenv_File
     {
         $dotenv = new static($filepath);
 
+        if ( ! is_dir(dirname($filepath))) {
+            mkdir(dirname($filepath), 0755, true);
+        }
         if ( ! $dotenv->exists()) {
             touch($filepath);
         }
