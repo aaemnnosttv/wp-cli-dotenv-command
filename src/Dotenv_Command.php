@@ -241,17 +241,16 @@ class Dotenv_Command extends WP_CLI_Command
 
         foreach ($dotenv->get_pairs() as $key => $value) {
             // Skip if not requested
-            if ( ! empty($keys) && ! in_array($key, $keys)) {
+            if ( is_array($keys) && ! in_array($key, $keys)) {
                 continue;
             }
 
-            $items[] = (object)compact('key', 'value');
+            $items[] = (object) compact('key', 'value');
         }
 
-        $fields = \WP_CLI\Utils\get_flag_value($assoc_args, 'fields', ['key', 'value']);
-        $fields = is_string($fields) ? explode(',', $fields) : $fields;
-
-        $formatter = new Formatter($assoc_args, $fields);
+        $fields    = is_string($this->args->fields) ? explode(',', $this->args->fields) : $this->args->fields;
+        $args      = $this->args->toArray();
+        $formatter = new Formatter($args, $fields);
         $formatter->display_items($items);
     }
 
