@@ -245,7 +245,7 @@ class Dotenv_File
     {
         $removed = 0;
 
-        $this->filter(function ($line) use ($key, &$removed) {
+        $this->lines = $this->filter(function ($line) use ($key, &$removed) {
             if ($this->is_key_match($key, $line)) {
                 $removed++;
 
@@ -261,13 +261,11 @@ class Dotenv_File
     /**
      * @param callable $callback
      *
-     * @return $this
+     * @return array
      */
     public function map(callable $callback)
     {
-        $this->lines = array_map($callback, $this->lines);
-
-        return $this;
+        return array_map($callback, $this->lines);
     }
 
     /**
@@ -275,11 +273,21 @@ class Dotenv_File
      *
      * @return $this
      */
-    public function filter(callable $callback)
+    public function transform(callable $callback)
     {
-        $this->lines = array_filter($this->lines, $callback);
+        $this->lines = $this->map($callback);
 
         return $this;
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return array
+     */
+    public function filter($callback = null)
+    {
+        return array_filter($this->lines, $callback);
     }
 
     /**
@@ -374,13 +382,11 @@ class Dotenv_File
     {
         $pairs = [];
 
-        $this->map(function ($line) use (&$pairs) {
-            $pair = $this->get_pair_for_line($line);
-
-            if (strlen($pair[ 'key' ])) {
-                $pairs[ $pair[ 'key' ] ] = $pair[ 'value' ];
+        foreach ($this->lines as $line) {
+            if ($pair = $this->get_pair_for_line($line)) {
+                $pairs[ $pair['key'] ] = $pair['value'];
             }
-        });
+        }
 
         return $pairs;
     }
