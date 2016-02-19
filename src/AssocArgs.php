@@ -4,12 +4,15 @@ namespace WP_CLI_Dotenv_Command;
 
 class AssocArgs
 {
+    private $__args = [];
+
     protected $file = '.env';
 
     protected $fields = ['key', 'value'];
 
     public function __construct(array $args = [])
     {
+        $this->__args = $args;
         $this->fill($args);
     }
 
@@ -20,9 +23,21 @@ class AssocArgs
         }
     }
 
+    /**
+     * The original unmodified arguments
+     * @return array
+     */
+    public function original()
+    {
+        return $this->__args;
+    }
+
     public function toArray()
     {
-        return (array) $this;
+        $args = get_object_vars($this);
+        unset($args['__args']);
+
+        return $args;
     }
 
     public function __get($prop)
