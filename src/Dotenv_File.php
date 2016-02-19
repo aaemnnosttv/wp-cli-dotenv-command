@@ -32,6 +32,10 @@ class Dotenv_File
      */
     const PATTERN_KEY_CAPTURE_FORMAT = '/^%s(\s+)?=/';
 
+    const QUOTE_SINGLE = '\'';
+
+    const QUOTE_DOUBLE = '"';
+
     /**
      * Dotenv_File constructor.
      *
@@ -359,25 +363,57 @@ class Dotenv_File
     /**
      * @param $line
      *
-     * @return array
+     * @return bool|array
      */
     public function get_pair_for_line($line)
     {
         $pieces = explode('=', $line, 2);
         $pieces = array_map('trim', $pieces);
 
-        $key   = array_shift($pieces);
-        $value = array_shift($pieces);
-
-        if (0 === strpos($value, '\'')) {
-            $value = trim($value, '\'');
-        } elseif (0 === strpos($value, '"')) {
-            $value = trim($value, '"');
+        if (2 !== count($pieces)) {
+            return false;
         }
+
+        list($key, $value) = $pieces;
+
+        if (is_null($key) || is_null($value)) {
+            return false;
+        }
+
+        $value = $this->clean_quotes($value);
 
         return compact('key', 'value');
     }
 
+    /**
+     * Trim surrounding quotes from a string
+     *
+     * @param $string
+     *
+     * @return string
+     */
+    protected function clean_quotes($string)
+    {
+        $first_char = mb_substr((string) $string,  0);
+        $last_char  = mb_substr((string) $string, -1);
+
+        /**
+         * Test the first and last character for quote type
+         */
+        if (1 === count(array_unique([$first_char, $last_char, self::QUOTE_SINGLE]))) {
+            return trim($string, self::QUOTE_SINGLE);
+        }
+
+        if (1 === count(array_unique([$first_char, $last_char, self::QUOTE_DOUBLE]))) {
+            return trim($string, self::QUOTE_DOUBLE);
+        }
+
+        return $string;
+    }
+
+    /**
+     * @return array
+     */
     public function get_pairs()
     {
         $pairs = [];
