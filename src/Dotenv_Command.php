@@ -243,4 +243,14 @@ class Dotenv_Command extends WP_CLI_Command
         $formatter->display_items($items);
     }
 
+    /**
+     * @param      $key
+     * @param null $default
+     *
+     * @return mixed
+     */
+    protected function get_flag($key, $default = null)
+    {
+        return \WP_CLI\Utils\get_flag_value($this->args->original(), $key, $default);
+    }
 }
