@@ -27,7 +27,8 @@ class Dotenv_Salts_Command extends WP_CLI_Command
      */
     function generate($_, $assoc_args)
     {
-        $dotenv = get_dotenv_for_write_or_fail($assoc_args);
+        $this->init_args(func_get_args());
+        $dotenv = get_dotenv_for_write_or_fail($this->args->file);
         $set    = $skipped = [];
 
         try {
@@ -80,7 +81,8 @@ class Dotenv_Salts_Command extends WP_CLI_Command
      */
     function regenerate($_, $assoc_args)
     {
-        $dotenv = get_dotenv_for_write_or_fail($assoc_args);
+        $this->init_args(func_get_args());
+        $dotenv = get_dotenv_for_write_or_fail($this->args->file);
 
         try {
             $salts = Salts::fetch_array();
