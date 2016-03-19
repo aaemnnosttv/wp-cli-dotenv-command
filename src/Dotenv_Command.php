@@ -104,8 +104,10 @@ class Dotenv_Command extends WP_CLI_Command
 
         $dotenv->load(); // reload the new copied data from template
 
+        WP_CLI::line();
         WP_CLI::line('Interactive init');
-        WP_CLI::line('Specify a new value for each key, or leave blank for no change.');
+        WP_CLI::line('Specify a new value for each key, or leave blank to keep the current value.');
+        WP_CLI::line();
         
         $this->prompt_all($dotenv);
     }
