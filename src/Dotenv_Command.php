@@ -106,21 +106,8 @@ class Dotenv_Command extends WP_CLI_Command
 
         WP_CLI::line('Interactive init');
         WP_CLI::line('Specify a new value for each key, or leave blank for no change.');
-
-        // iterate over each line and prompt for a new value
-        $dotenv->transform(function ($line) use ($dotenv) {
-            if ( ! $pair = $dotenv->get_pair_for_line($line)) {
-                return $line;
-            }
-
-            $user_value = \cli\prompt($pair[ 'key' ], $pair[ 'value' ]);
-
-            if ( ! strlen($user_value)) {
-                return $line;
-            }
-
-            return format_line($pair[ 'key' ], $user_value);
-        })->save();
+        
+        $this->prompt_all($dotenv);
     }
 
     /**
@@ -244,5 +231,30 @@ class Dotenv_Command extends WP_CLI_Command
         $args      = $this->args->toArray();
         $formatter = new Formatter($args, $fields);
         $formatter->display_items($items);
+    }
+
+    /**
+     * Iterate over each line and prompt for a new value
+     *
+     * @param Dotenv_File $dotenv
+     *
+     * @return int
+     */
+    protected function prompt_all(Dotenv_File $dotenv)
+    {
+        $dotenv->transform(function ($line) use ($dotenv) {
+            if ( ! $pair = $dotenv->get_pair_for_line($line)) {
+                return $line;
+            }
+
+            $user_value = \cli\prompt($pair[ 'key' ], $pair[ 'value' ]);
+
+            if ( ! strlen($user_value)) {
+                return $line;
+            }
+
+            return format_line($pair[ 'key' ], $user_value);
+        })->save()
+        ;
     }
 }
