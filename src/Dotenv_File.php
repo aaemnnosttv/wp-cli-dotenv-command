@@ -380,7 +380,7 @@ class Dotenv_File
             return false;
         }
 
-        $value = $this->clean_quotes($value);
+        $value = static::clean_quotes($value);
 
         return compact('key', 'value');
     }
@@ -392,20 +392,16 @@ class Dotenv_File
      *
      * @return string
      */
-    protected function clean_quotes($string)
+    public static function clean_quotes($string)
     {
-        $first_char = mb_substr((string) $string,  0);
-        $last_char  = mb_substr((string) $string, -1);
+        $first_char = substr((string) $string,  0, 1);
+        $last_char  = substr((string) $string, -1, 1);
 
         /**
          * Test the first and last character for quote type
          */
-        if (1 === count(array_unique([$first_char, $last_char, self::QUOTE_SINGLE]))) {
-            return trim($string, self::QUOTE_SINGLE);
-        }
-
-        if (1 === count(array_unique([$first_char, $last_char, self::QUOTE_DOUBLE]))) {
-            return trim($string, self::QUOTE_DOUBLE);
+        if ($first_char === $last_char && in_array($first_char, [self::QUOTE_SINGLE, self::QUOTE_DOUBLE])) {
+            return trim($string, $first_char);
         }
 
         return $string;
