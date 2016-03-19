@@ -12,6 +12,9 @@ use WP_CLI;
  */
 function format_line($key, $value)
 {
+    if (strpos($value, ' ') !== false) {
+        $value = "'$value'";
+    }
     return sprintf(Dotenv_File::LINE_FORMAT, $key, $value);
 }
 
