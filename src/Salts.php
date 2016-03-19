@@ -39,19 +39,13 @@ class Salts
      */
     public static function parse_php_to_array(array $response)
     {
-        $salts = [];
-
-        array_map(function ($line) use (&$salts) {
+        return array_map(function ($line) {
             // capture everything between single quotes
             preg_match_all(self::PATTERN_CAPTURE, $line, $matches);
             // matches[x]
             //   0 - complete match
             //   1 - captures
-            list($name, $value) = $matches[ 1 ];
-
-            $salts[ $name ] = $value;
+            return $matches[ 1 ];
         }, $response);
-
-        return $salts;
     }
 }

@@ -37,7 +37,9 @@ class Dotenv_Salts_Command extends WP_CLI_Command
             return;
         }
 
-        foreach ($salts as $key => $value) {
+        foreach ($salts as $salt) {
+            list($key, $value) = $salt;
+
             if ($dotenv->has_key($key)) {
                 WP_CLI::line("The '$key' already exists, skipping.");
                 $skipped[] = $key;
@@ -87,7 +89,8 @@ class Dotenv_Salts_Command extends WP_CLI_Command
             return;
         }
 
-        foreach ($salts as $key => $value) {
+        foreach ($salts as $salt) {
+            list($key, $value) = $salt;
             $dotenv->set($key, $value);
         }
 
