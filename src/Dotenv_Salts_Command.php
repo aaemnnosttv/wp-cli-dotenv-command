@@ -10,6 +10,7 @@ use WP_CLI_Command;
  */
 class Dotenv_Salts_Command extends WP_CLI_Command
 {
+    use DotenvArgs;
 
     /**
      * Fetch some fresh salts and add them to the environment file if they do not already exist
