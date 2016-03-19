@@ -137,6 +137,18 @@ class Dotenv_FileTest extends PHPUnit_Framework_TestCase
         $this->assertSame($dotenv->get_pairs(), ['FOO' => 'BAR']);
     }
 
+    /**
+     * @test
+     */
+    public function it_can_clean_matching_quotes_from_both_ends_of_a_string()
+    {
+        // value is wrapped with double quotes
+    	$this->assertSame('foo', Dotenv_File::clean_quotes('"foo"'));
+        // value is wrapped with single quotes
+    	$this->assertSame('bar', Dotenv_File::clean_quotes('\'bar\''));
+        // value is wrapped with quotes that do not match - could be part of value itself
+    	$this->assertSame('\'baz"', Dotenv_File::clean_quotes('\'baz"'));
+    }
 
     /**
      * Copies the fixture file to a new file with a unique name
