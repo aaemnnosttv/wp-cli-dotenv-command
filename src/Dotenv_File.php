@@ -25,7 +25,7 @@ class Dotenv_File
     /**
      * Single line format
      */
-    const LINE_FORMAT = '%s=\'%s\'';
+    const LINE_FORMAT = '%s=%s';
 
     /**
      * Pattern to match a var definition
