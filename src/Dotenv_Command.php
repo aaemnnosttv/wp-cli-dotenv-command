@@ -26,7 +26,10 @@ class Dotenv_Command extends WP_CLI_Command
      * : Path to a template to use to interactively set values
      *
      * [--interactive]
-     * : Set new values from the template interactively. Leave blank for no change.
+     * : Set new values from the template interactively with prompts for each key-value pair
+     *
+     * [--force]
+     * : Overwrite existing destination file if it exists
      *
      * @synopsis [--file=<path-to-dotenv>] [--with-salts] [--template=<template-name>] [--interactive] [--force]
      *
