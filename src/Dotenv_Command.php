@@ -72,23 +72,20 @@ class Dotenv_Command extends WP_CLI_Command
      * @param $dotenv
      * @param $template
      */
-    protected function init_from_template(Dotenv_File &$dotenv, $template)
+    protected function init_from_template(Dotenv_File $dotenv, $template)
     {
-        $template_path   = get_filepath($template);
-        $dotenv_template = new Dotenv_File($template_path);
-
-        if ( ! $dotenv_template->exists()) {
-            WP_CLI::error("Template file does not exist at: " . $dotenv_template->get_filepath());
-
-            return;
-        }
-        if ( ! $dotenv_template->is_readable()) {
-            WP_CLI::error("Template file is not readable at: " . $dotenv_template->get_filepath());
-
-            return;
-        }
         if ( ! $dotenv->is_writable()) {
             WP_CLI::error('Environment file is not readable at: ' . $dotenv->get_filepath());
+
+            return;
+        }
+
+        $template_path = get_filepath($template);
+
+        try {
+            $dotenv_template = Dotenv_File::at($template_path);
+        } catch (\Exception $e) {
+            WP_CLI::error("Template file is not readable at: $template_path");
 
             return;
         }
