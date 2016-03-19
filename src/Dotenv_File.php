@@ -295,17 +295,18 @@ class Dotenv_File
     }
 
     /**
+     *
+     * key = value
+     * key=value
+     * key = "value"
+     * key='value'
+     *
      * @param $line
      *
      * @return bool|string
      */
     protected function parse_line_value($line)
     {
-        // key = value
-        // key=value
-        // key = "value"
-        // key='value' << our format
-
         if ( ! strpos($line, '=')) {
             return false;
         }
@@ -313,9 +314,7 @@ class Dotenv_File
         // break the line at the = into 2 pieces (key, value)
         $pieces = explode('=', $line, 2);
         // clean off any extra whitespace or wrapping quotes
-        $value = trim(array_pop($pieces), '\'""');
-
-        return $value;
+        return static::clean_quotes(end($pieces));
     }
 
     /**
