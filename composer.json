@@ -19,5 +19,8 @@
     "autoload": {
         "psr-4": {"WP_CLI_Dotenv_Command\\": "src/"},
         "files": ["command.php"]
+    },
+    "autoload-dev": {
+        "files": ["src/functions.php"]
     }
 }
