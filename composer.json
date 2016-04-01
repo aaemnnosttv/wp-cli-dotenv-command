@@ -2,6 +2,9 @@
     "name": "aaemnnosttv/wp-cli-dotenv-command",
     "description": "Dotenv commands for WP-CLI",
     "homepage": "https://github.com/aaemnnosttv/wp-cli-dotenv-command",
+    "support": {
+        "issues": "https://github.com/aaemnnosttv/wp-cli-dotenv-command/issues"
+    },
     "license": "MIT",
     "authors": [
         {
