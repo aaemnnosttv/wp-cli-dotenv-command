@@ -43,6 +43,9 @@ Pass `--interactive` with the same command to be prompted for each defined varia
 #### `--with-salts`
 Initialize the environment file with some fresh salts provided by the wordpress.org salt generator service.  Any existing keys by the same name will not be overridden.  See `wp dotenv salts`.
 
+#### `--force`
+Overwrites an existing file, if it exists
+
 ## `list`
 Prints out all of the key/value pairs as defined in the environment file.  
 Supports all of the same options for `--format=<out>` you've known to grow and love (`table`,`json`,`csv`,..etc).  Default: `table`.
@@ -65,10 +68,19 @@ Initialize the environment file with some fresh salts provided by the wordpress.
 Same as `generate`, but will update all keys for salts with new values.
 
 # Installation
-Due to the nature of this command, it cannot be installed as a plugin and thus would not be useful to install as a project dependency.  Instead, the Dotenv Command is installed as a Composer package, and loaded by the local user's wp-cli config.
 
+#### Recommended
+
+As of WP-CLI v0.23, you may install the dotenv command using the new `package` command:
+```
+wp package install aaemnnosttv/wp-cli-dotenv-command
+```
+
+#### Pre WP-CLI v0.23:
+
+Prior to v0.23, the dotenv command is installed as a Composer package to the local user's wp-cli config.
  
-Create the wp-cli user directory, if it doesn't already exist
+Create the wp-cli user directory, if it doesn't already exist and change directory into it
 ```
 mkdir ~/.wp-cli && cd ~/.wp-cli
 ```
