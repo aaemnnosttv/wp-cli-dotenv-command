@@ -1,4 +1,8 @@
-<?php namespace WP_CLI_Dotenv_Command;
+<?php
+
+namespace WP_CLI_Dotenv_Command;
+
+use Illuminate\Support\Collection;
 
 /**
  * Class Dotenv_File
@@ -18,9 +22,9 @@ class Dotenv_File
     protected $filename;
     /**
      * File lines
-     * @var array
+     * @var Collection
      */
-    protected $lines = [];
+    protected $lines;
 
     /**
      * Single line format
@@ -146,7 +150,7 @@ class Dotenv_File
      */
     public function add_line($value)
     {
-        array_push($this->lines, (string)$value);
+        $this->lines->push((string) $value);
     }
 
     /**
@@ -166,7 +170,7 @@ class Dotenv_File
      */
     public function load()
     {
-        $this->lines = file($this->filepath, FILE_IGNORE_NEW_LINES);
+        $this->lines = Collection::make(file($this->filepath, FILE_IGNORE_NEW_LINES));
 
         return $this;
     }
@@ -176,7 +180,7 @@ class Dotenv_File
      */
     public function save()
     {
-        $contents = join(PHP_EOL, $this->lines) . PHP_EOL;
+        $contents = $this->lines->implode(PHP_EOL) . PHP_EOL;
 
         return file_put_contents($this->filepath, $contents);
     }
@@ -186,7 +190,7 @@ class Dotenv_File
      */
     public function size()
     {
-        return count($this->lines);
+        return $this->lines->count();
     }
 
     /**
@@ -203,14 +207,16 @@ class Dotenv_File
      */
     public function get($key)
     {
-        foreach ($this->lines as &$line) {
-            if ($this->is_key_match($key, $line)) {
-                return $this->parse_line_value($line);
-            }
+        $line = $this->lines->first(function($index, $line) use ($key) {
+            return $this->is_key_match($key, $line);
+        });
+
+        if (! is_null($line)) {
+            return $this->parse_line_value($line);
         }
 
         // if we got here, the key wasn't matched
-        return null;
+        return $line;
     }
 
     /**
@@ -247,19 +253,13 @@ class Dotenv_File
      */
     public function remove($key)
     {
-        $removed = 0;
+        $linesBefore = $this->lines->count();
 
-        $this->lines = $this->filter(function ($line) use ($key, &$removed) {
-            if ($this->is_key_match($key, $line)) {
-                $removed++;
-
-                return false;
-            }
-
-            return true;
+        $this->lines = $this->lines->reject(function ($line) use ($key) {
+            return $this->is_key_match($key, $line);
         });
 
-        return $removed;
+        return $linesBefore - $this->lines->count();
     }
 
     /**
@@ -287,11 +287,11 @@ class Dotenv_File
     /**
      * @param callable $callback
      *
-     * @return array
+     * @return Collection
      */
     public function filter($callback = null)
     {
-        return array_filter($this->lines, $callback);
+        return $this->lines->filter($callback);
     }
 
     /**

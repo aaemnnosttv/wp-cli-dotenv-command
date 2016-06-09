@@ -4,6 +4,8 @@ use WP_CLI_Dotenv_Command\Dotenv_File;
 
 class Dotenv_FileTest extends PHPUnit_Framework_TestCase
 {
+    use Fixtures;
+    
     /**
      * @test
      */
@@ -73,6 +75,27 @@ class Dotenv_FileTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($dotenv->set('BAR', 'BAZ'));
         $this->assertEquals('BAZ', $dotenv->get('BAR'));
     }
+
+    /**
+     * @test
+     */
+    function it_updates_existing_keys_or_adds_a_new_line()
+    {
+        $filepath = $this->get_fixture_path('env-basic');
+        $dotenv   = new Dotenv_File($filepath);
+        $dotenv->load();
+
+        $this->assertEquals('BAR', $dotenv->get('FOO'));
+
+        $dotenv->set('FOO', 'BAR-2');
+
+        $this->assertEquals('BAR-2', $dotenv->get('FOO'));
+        $this->assertEquals(1, $dotenv->size());
+
+        $dotenv->set('SECRET', 'stuff');
+        $this->assertEquals(2, $dotenv->size());
+    }
+
 
     /**
      * @test
@@ -148,28 +171,5 @@ class Dotenv_FileTest extends PHPUnit_Framework_TestCase
     	$this->assertSame('bar', Dotenv_File::clean_quotes('\'bar\''));
         // value is wrapped with quotes that do not match - could be part of value itself
     	$this->assertSame('\'baz"', Dotenv_File::clean_quotes('\'baz"'));
-    }
-
-    /**
-     * Copies the fixture file to a new file with a unique name
-     *
-     * @param $filename
-     *
-     * @return string absolute path to new file
-     */
-    protected function copy_fixture($filename)
-    {
-        $filepath = $this->get_fixture_path($filename);
-        $new_path = $filepath . microtime(false) . uniqid();
-//        $new_path = 'php://memory/' . microtime(false) . uniqid();
-
-        copy($filepath, $new_path);
-
-        return $new_path;
-    }
-
-    protected function get_fixture_path($path)
-    {
-        return realpath(__DIR__ . '/../fixtures/' . $path);
     }
 }

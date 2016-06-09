@@ -59,7 +59,6 @@ function get_dotenv_for_read_or_fail($args)
         return $dotenv->load();
     } catch (\Exception $e) {
         WP_CLI::error($e->getMessage());
-        exit;
     }
 }
 
@@ -80,7 +79,6 @@ function get_dotenv_for_write_or_fail($args)
         $dotenv->load();
     } catch (\Exception $e) {
         WP_CLI::error($e->getMessage());
-        exit;
     }
 
     return $dotenv;
@@ -100,8 +98,6 @@ function prompt($question, $default)
         $response = \cli\prompt($question, $default);
     } catch (\Exception $e) {
         WP_CLI::error($e->getMessage());
-
-        return false;
     }
 
     return $response;
