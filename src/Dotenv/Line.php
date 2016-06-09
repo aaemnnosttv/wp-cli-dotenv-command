@@ -1,10 +1,10 @@
 <?php
 
-namespace WP_CLI_Dotenv_Command;
+namespace WP_CLI_Dotenv\Dotenv;
 
 use Illuminate\Support\Collection;
 
-class Dotenv_Line
+class Line
 {
     /**
      * Single line format
@@ -23,9 +23,14 @@ class Dotenv_Line
     protected $text;
 
 
-    public function __construct($text)
+    public function __construct($text = null)
     {
         $this->text = $text;
+    }
+
+    public static function fromPair($key, $value)
+    {
+        return new static(sprintf(static::FORMAT, $key, $value));
     }
 
     public function key()
@@ -38,6 +43,10 @@ class Dotenv_Line
 
     public function value()
     {
+        if (! strlen($this->text)) {
+            return $this->text;
+        }
+
         $pieces = explode('=', $this->text, 2);
         $pieces = array_map('trim', $pieces);
 

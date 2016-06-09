@@ -1,8 +1,8 @@
 <?php
 
-namespace WP_CLI_Dotenv_Command;
+namespace WP_CLI_Dotenv\WP_CLI;
 
-trait DotenvArgs
+trait Args
 {
     /**
      * @var AssocArgs

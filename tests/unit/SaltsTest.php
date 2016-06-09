@@ -1,6 +1,6 @@
 <?php
 
-use WP_CLI_Dotenv_Command\Salts;
+use WP_CLI_Dotenv\Salts\Salts;
 
 class SaltsTest extends PHPUnit_Framework_TestCase
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI_Dotenv_Command;
+namespace WP_CLI_Dotenv\WP_CLI;
 
 use WP_CLI;
 use WP_CLI_Command;
@@ -8,9 +8,9 @@ use WP_CLI_Command;
 /**
  * Manage WordPress salts in .env format
  */
-class Dotenv_Salts_Command extends WP_CLI_Command
+class SaltsCommand extends WP_CLI_Command
 {
-    use DotenvArgs;
+    use Args;
 
     /**
      * Fetch some fresh salts and add them to the environment file if they do not already exist

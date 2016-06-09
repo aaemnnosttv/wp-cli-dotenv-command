@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI_Dotenv_Command;
+namespace WP_CLI_Dotenv\WP_CLI;
 
 use WP_CLI;
 use WP_CLI_Command;
@@ -9,7 +9,7 @@ use WP_CLI\Formatter;
 /**
  * Manage a .env file
  */
-class Dotenv_Command extends WP_CLI_Command
+class DotenvCommand extends WP_CLI_Command
 {
     use DotenvArgs;
     

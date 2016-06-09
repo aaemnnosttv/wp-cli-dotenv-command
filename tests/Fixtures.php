@@ -1,5 +1,7 @@
 <?php
 
+namespace WP_CLI_Dotenv;
+
 trait Fixtures
 {
     /**

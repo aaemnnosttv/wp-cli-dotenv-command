@@ -21,7 +21,7 @@
         "wp-cli/wp-cli": "^0.22.0"
     },
     "autoload": {
-        "psr-4": {"WP_CLI_Dotenv_Command\\": "src/"},
+        "psr-4": {"WP_CLI_Dotenv\\": "src/"},
         "files": ["command.php"]
     },
     "autoload-dev": {

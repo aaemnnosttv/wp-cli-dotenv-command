@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI_Dotenv_Command;
+namespace WP_CLI_Dotenv\Salts;
 
 class Salts
 {
@@ -27,7 +27,7 @@ class Salts
             throw new \Exception('There was a problem fetching salts from the WordPress generator service.');
         }
 
-        return (array)static::parse_php_to_array($response);
+        return (array) static::parse_php_to_array($response);
     }
 
     /**
