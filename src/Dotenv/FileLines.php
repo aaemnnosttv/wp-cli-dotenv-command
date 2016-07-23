@@ -22,6 +22,31 @@ class FileLines extends Collection
     }
 
     /**
+     * Add a new line to the collection.
+     *
+     * @param LineInterface $line
+     *
+     * @return $this
+     */
+    public function add(LineInterface $line)
+    {
+        return $this->push($line);
+    }
+
+    /**
+     * Put a new line at a given key/index.
+     *
+     * @param mixed         $key
+     * @param LineInterface $line
+     *
+     * @return $this
+     */
+    public function set($key, LineInterface $line)
+    {
+        parent::put($key, $line);
+
+        return $this;
+    }
 
     /**
      * Convert the lines back to a single string.
