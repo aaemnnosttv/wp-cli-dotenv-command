@@ -22,11 +22,15 @@ class FileLines extends Collection
     }
 
     /**
+
+    /**
+     * Convert the lines back to a single string.
+     *
      * @return string
      */
     public function toString()
     {
-        return $this->map(function ($line) {
+        return $this->map(function (LineInterface $line) {
             return $line->toString();
         })->implode(PHP_EOL);
     }
@@ -38,8 +42,8 @@ class FileLines extends Collection
      */
     public function pairs()
     {
-        return $this->filter(function ($line) {
-            return $line->isPair();
+        return $this->filter(function (LineInterface $line) {
+            return $line instanceof KeyValue;
         });
     }
 }
