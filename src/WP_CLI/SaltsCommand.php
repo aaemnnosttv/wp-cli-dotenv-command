@@ -41,7 +41,7 @@ class SaltsCommand extends Command
             return;
         }
 
-        $this->update_salts($env, $salts, $this->get_flag('force'));
+        $updated = $this->update_salts($salts, $env, $this->get_flag('force'));
 
         $skipped = $salts->pluck('skipped')->count();
         $set = $salts->count() - $skipped;
@@ -83,17 +83,19 @@ class SaltsCommand extends Command
             exit;
         }
 
-        $this->update_salts($env, $salts, true);
+        $this->update_salts($salts, $env, true);
 
         WP_CLI::success('Salts regenerated.');
     }
 
     /**
-     * @param File       $file   Environment file
-     * @param Collection $salts  Salts collection
-     * @param bool       $force  Whether or not to force update any existing values
+     * @param Collection $salts Salts collection
+     * @param File       $file  Environment file
+     * @param bool       $force Whether or not to force update any existing values
+     *
+     * @return Collection
      */
-    protected function update_salts(File $file, Collection $salts, $force = false)
+    protected function update_salts(Collection $salts, File $file, $force = false)
     {
         $salts->transform(function ($salt) use ($file, $force) {
             list($key, $value) = $salt;
