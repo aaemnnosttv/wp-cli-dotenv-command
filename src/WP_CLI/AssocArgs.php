@@ -10,6 +10,8 @@ class AssocArgs
 
     protected $fields = ['key', 'value'];
 
+    protected $keys = [];
+
     public function __construct(array $args = [])
     {
         $this->__args = $args;
