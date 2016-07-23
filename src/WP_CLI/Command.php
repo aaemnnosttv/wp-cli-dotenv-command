@@ -35,7 +35,7 @@ class Command extends \WP_CLI_Command
      *
      * @return File
      */
-    public function get_env_for_read_or_fail()
+    protected function get_env_for_read_or_fail()
     {
         try {
             return File::at($this->resolve_file_path())->load();
@@ -50,7 +50,7 @@ class Command extends \WP_CLI_Command
      *
      * @return File
      */
-    public function get_env_for_write_or_fail()
+    protected function get_env_for_write_or_fail()
     {
         try {
             return File::writable($this->resolve_file_path())->load();
@@ -67,7 +67,7 @@ class Command extends \WP_CLI_Command
      *
      * @return string
      */
-    public function resolve_file_path($file = null)
+    protected function resolve_file_path($file = null)
     {
         if (is_null($file)) {
             $file = $this->args->file;
@@ -97,7 +97,7 @@ class Command extends \WP_CLI_Command
      *
      * @return bool
      */
-    function prompt($question, $default)
+    protected function prompt($question, $default)
     {
         try {
             return \cli\prompt($question, $default);
