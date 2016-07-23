@@ -61,6 +61,19 @@ class FileTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    function it_can_create_a_new_file_at_the_given_path()
+    {
+        $path = $this->temp_path('new_env');
+        $env = File::create($path);
+
+        $this->assertTrue(file_exists($path));
+        $this->assertTrue($env->exists());
+        $this->assertSame($path, $env->path());
+    }
+
+    /**
+     * @test
+     */
     public function it_can_check_for_the_existence_of_a_defined_var_by_key()
     {
         $env = File::at($this->get_fixture_path('env-basic'));
