@@ -7,15 +7,17 @@ use Illuminate\Support\Collection;
 class FileLines extends Collection
 {
     /**
-     * Create a new collection of file lines from the file at given path
-     * @param  [type] $filepath [description]
-     * @return [type]           [description]
+     * Create a new collection of file lines from the file at given path.
+     *
+     * @param $filePath
+     *
+     * @return static
      */
-    public static function load($filepath)
+    public static function load($filePath)
     {
-        return (new static(file($filepath, FILE_IGNORE_NEW_LINES)))
+        return static::make(file($filePath, FILE_IGNORE_NEW_LINES))
             ->map(function ($lineText) {
-                return new Line($lineText);
+                return Line::parse_raw($lineText);
             });
     }
 
