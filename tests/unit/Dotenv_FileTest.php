@@ -5,20 +5,17 @@ use WP_CLI_Dotenv\Dotenv\File;
 class FileTest extends PHPUnit_Framework_TestCase
 {
     use WP_CLI_Dotenv\Fixtures;
-    
+
     /**
      * @test
      */
     public function it_loads_the_file()
     {
-        $filepath = $this->get_fixture_path('env-basic');
-        $dotenv   = new File($filepath);
+        $path = $this->get_fixture_path('env-basic');
+        $env  = new File($path);
 
-        $this->assertFileExists($dotenv->get_filepath());
-        $this->assertTrue($dotenv->exists());
-        $this->assertTrue($dotenv->is_readable());
-        $this->assertTrue($dotenv->is_writable());
-        $this->assertEquals('env-basic', $dotenv->get_filename());
+        $this->assertTrue($env->is_readable());
+        $this->assertTrue($env->is_writable());
     }
 
     /**
@@ -26,14 +23,14 @@ class FileTest extends PHPUnit_Framework_TestCase
      */
     public function it_has_a_named_constructor_for_the_file_AT_the_given_path()
     {
-        $dotenv = File::at($this->get_fixture_path('env-basic'));
+        $env = File::at($this->get_fixture_path('env-basic'));
 
-        $this->assertInstanceOf(File::class, $dotenv);
+        $this->assertInstanceOf(File::class, $env);
     }
 
     /**
      * @test
-     * @expectedException RuntimeException
+     * @expectedException InvalidArgumentException
      */
     public function it_throws_an_exception_if_the_file_is_not_readable()
     {
@@ -45,20 +42,20 @@ class FileTest extends PHPUnit_Framework_TestCase
      */
     public function it_has_a_named_constructor_for_the_writable_file_at_the_given_path()
     {
-        $dotenv = File::writable($this->get_fixture_path('env-basic'));
+        $env = File::writable($this->get_fixture_path('env-basic'));
 
-        $this->assertInstanceOf(File::class, $dotenv);
+        $this->assertInstanceOf(File::class, $env);
     }
 
     /**
      * @test
-     * @expectedException RuntimeException
+     * @expectedException InvalidArgumentException
      */
     public function it_throws_an_exception_if_the_file_is_not_writable()
     {
-        $filepath = $this->get_fixture_path('env-unwritable');
-        chmod($filepath, 0444);
-        File::writable($filepath);
+        $path = $this->get_fixture_path('env-unwritable');
+        chmod($path, 0444);
+        File::writable($path);
     }
 
     /**
@@ -66,16 +63,16 @@ class FileTest extends PHPUnit_Framework_TestCase
      */
     public function it_can_get_and_set_values_for_a_given_key()
     {
-        $filepath = $this->get_fixture_path('env-basic');
-        $dotenv   = new File($filepath);
-        $dotenv->load();
+        $path = $this->get_fixture_path('env-basic');
+        $env  = new File($path);
+        $env->load();
 
-        $this->assertEquals('BAR', $dotenv->get('FOO'));
-        $this->assertNull($dotenv->get('BAR'));
+        $this->assertEquals('BAR', $env->get('FOO'));
+        $this->assertNull($env->get('BAR'));
 
-        $dotenv->set('BAR', 'BAZ');
+        $env->set('BAR', 'BAZ');
 
-        $this->assertEquals('BAZ', $dotenv->get('BAR'));
+        $this->assertEquals('BAZ', $env->get('BAR'));
     }
 
     /**
@@ -83,19 +80,19 @@ class FileTest extends PHPUnit_Framework_TestCase
      */
     function it_updates_existing_keys_or_adds_a_new_line()
     {
-        $filepath = $this->get_fixture_path('env-basic');
-        $dotenv   = new File($filepath);
-        $dotenv->load();
+        $path = $this->get_fixture_path('env-basic');
+        $env  = new File($path);
+        $env->load();
 
-        $this->assertEquals('BAR', $dotenv->get('FOO'));
+        $this->assertEquals('BAR', $env->get('FOO'));
 
-        $dotenv->set('FOO', 'BAR-2');
+        $env->set('FOO', 'BAR-2');
 
-        $this->assertEquals('BAR-2', $dotenv->get('FOO'));
-        $this->assertEquals(2, $dotenv->size());
+        $this->assertEquals('BAR-2', $env->get('FOO'));
+        $this->assertEquals(2, $env->size());
 
-        $dotenv->set('SECRET', 'stuff');
-        $this->assertEquals(3, $dotenv->size());
+        $env->set('SECRET', 'stuff');
+        $this->assertEquals(3, $env->size());
     }
 
 
@@ -105,19 +102,19 @@ class FileTest extends PHPUnit_Framework_TestCase
     public function it_does_not_write_to_the_file_until_save_is_called()
     {
         $filePath = $this->copy_fixture('env-basic');
-        $dotenv   = new File($filePath);
-        $dotenv->load();
+        $env      = new File($filePath);
+        $env->load();
 
-        $this->assertNull($dotenv->get('SOME_KEY'));
-        $dotenv->set('SOME_KEY', 'totally set');
+        $this->assertNull($env->get('SOME_KEY'));
+        $env->set('SOME_KEY', 'totally set');
 
-        $this->assertEquals('totally set', $dotenv->get('SOME_KEY'));
-        $this->assertEquals('integer', gettype($dotenv->save()));
-        $dotenv->set('SOME_KEY', 'this will be wiped out once we load in a second');
+        $this->assertEquals('totally set', $env->get('SOME_KEY'));
+        $this->assertEquals('integer', gettype($env->save()));
+        $env->set('SOME_KEY', 'this will be wiped out once we load in a second');
 
         // refresh the instance from the file
-        $dotenv->load();
-        $this->assertNull($dotenv->get('SOME_KEY'));
+        $env->load();
+        $this->assertNull($env->get('SOME_KEY'));
 
         unlink($filePath);
     }
@@ -127,15 +124,15 @@ class FileTest extends PHPUnit_Framework_TestCase
      */
     public function it_can_remove_a_line_by_the_key()
     {
-        $filepath = $this->get_fixture_path('env-basic');
-        $dotenv   = new File($filepath);
-        $dotenv->load();
+        $path = $this->get_fixture_path('env-basic');
+        $env  = new File($path);
+        $env->load();
 
-        $this->assertEquals('BAR', $dotenv->get('FOO'));
+        $this->assertEquals('BAR', $env->get('FOO'));
 
-        $dotenv->remove('FOO');
+        $env->remove('FOO');
 
-        $this->assertNull($dotenv->get('FOO'));
+        $this->assertNull($env->get('FOO'));
     }
 
     /**
@@ -143,11 +140,11 @@ class FileTest extends PHPUnit_Framework_TestCase
      */
     public function it_can_count_how_many_total_lines_the_file_has()
     {
-        $filepath = $this->get_fixture_path('env-one-line-one-comment');
-        $dotenv   = new File($filepath);
-        $dotenv->load();
+        $path = $this->get_fixture_path('env-one-line-one-comment');
+        $env  = new File($path);
+        $env->load();
 
-        $this->assertEquals(2, $dotenv->size());
+        $this->assertEquals(2, $env->size());
     }
 
     /**
@@ -155,10 +152,10 @@ class FileTest extends PHPUnit_Framework_TestCase
      */
     public function it_can_return_an_array_of_key_value_line_pairs()
     {
-        $filepath = $this->get_fixture_path('env-basic');
-        $dotenv   = new File($filepath);
-        $dotenv->load();
+        $path = $this->get_fixture_path('env-basic');
+        $env  = new File($path);
+        $env->load();
 
-        $this->assertCount(1, $dotenv->get_pairs());
+        $this->assertCount(1, $env->dictionary());
     }
 }

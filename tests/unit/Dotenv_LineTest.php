@@ -28,7 +28,9 @@ class Dotenv_LineTest extends PHPUnit_Framework_TestCase
     function it_can_return_itself_as_a_string()
     {
         $line = new Line('FOO = Monkey stuff');
-        $this->assertSame('FOO=Monkey stuff', $line->toString());
+        $this->assertSame('FOO = Monkey stuff', $line->toString());
+        $line = new Line('Some line');
+        $this->assertSame('Some line', $line->toString());
     }
 
     /**
@@ -47,16 +49,20 @@ class Dotenv_LineTest extends PHPUnit_Framework_TestCase
         // value is wrapped with quotes that do not match - could be part of value itself
         $this->assertSame('\'BAR"', $lineWithMixedQuotedValue->value());
     }
-
     /**
      * @test
      */
-    public function it_can_be_constructed_from_a_pair()
+    public function it_can_determine_the_matching_quote_that_wraps_the_value()
     {
-    	$line = Line::fromPair('key', 'value');
+        $lineWithSingleQuotedValue = new Line("FOO = 'BAR'");
+        $lineWithDoubleQuotedValue = new Line('FOO = "BAR"');
+        $lineWithMixedQuotedValue = new Line('FOO = \'BAR"');
 
-        $this->assertSame('key', $line->key());
-        $this->assertSame('value', $line->value());
+        // value is wrapped with double quotes
+    	$this->assertSame('\'', $lineWithSingleQuotedValue->quote());
+        // value is wrapped with single quotes
+        $this->assertSame('"', $lineWithDoubleQuotedValue->quote());
+        // value is wrapped with quotes that do not match - could be part of value itself
+        $this->assertSame('', $lineWithMixedQuotedValue->quote());
     }
-
 }
