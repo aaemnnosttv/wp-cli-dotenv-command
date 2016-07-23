@@ -2,6 +2,7 @@
 
 namespace WP_CLI_Dotenv\Dotenv;
 
+use InvalidArgumentException;
 use Illuminate\Support\Collection;
 
 /**
@@ -11,120 +12,88 @@ use Illuminate\Support\Collection;
 class File
 {
     /**
-     * Absolute path to file
+     * Absolute path to the file
      * @var string
      */
-    protected $filepath;
+    protected $path;
+
     /**
-     * File name
-     * @var string
-     */
-    protected $filename;
-    /**
-     * File lines
+     * Lines collection
      * @var FileLines
      */
     protected $lines;
 
     /**
-     * Single line format
-     */
-    const LINE_FORMAT = '%s=%s';
-
-    /**
-     * Pattern to match a var definition
-     */
-    const PATTERN_KEY_CAPTURE_FORMAT = '/^%s(\s+)?=/';
-
-    const QUOTE_SINGLE = '\'';
-
-    const QUOTE_DOUBLE = '"';
-
-    /**
-     * Dotenv_File constructor.
+     * File constructor.
      *
-     * @param $filepath
+     * @param string $path
      */
-    public function __construct($filepath)
+    public function __construct($path)
     {
-        $this->filepath = $filepath;
-        $this->filename = basename($filepath);
+        $this->path = $path;
     }
 
     /**
-     * @param $filepath
+     * Get a new instance, and ensure the file is readable.
+     *
+     * @param $path
+     *
+     * @throws InvalidArgumentException
      *
      * @return static
      */
-    public static function at($filepath)
+    public static function at($path)
     {
-        $dotenv = new static($filepath);
+        $file = new static($path);
 
-        if (! $dotenv->is_readable()) {
-            throw new \RuntimeException("File not readable at $filepath");
+        if (! is_readable($path)) {
+            throw new InvalidArgumentException("File not readable at $path");
         }
 
-        return $dotenv;
+        return $file;
     }
 
     /**
-     * @param $filepath
+     * Get a new instance, and ensure the file is writable.
      *
-     * @return Dotenv_File
-     */
-    public static function writable($filepath)
-    {
-        $dotenv = static::at($filepath);
-
-        if (! $dotenv->is_writable()) {
-            throw new \RuntimeException("File not writable at $filepath");
-        }
-
-        return $dotenv;
-    }
-
-
-    /**
-     * @param $filepath
+     * @param $path
+     *
+     * @throws InvalidArgumentException
      *
      * @return static
      */
-    public static function create($filepath)
+    public static function writable($path)
     {
-        $dotenv = new static($filepath);
+        $file = static::at($path);
 
-        if ( ! is_dir(dirname($filepath))) {
-            mkdir(dirname($filepath), 0755, true);
-        }
-        if ( ! $dotenv->exists()) {
-            touch($filepath);
+        if (! is_writable($path)) {
+            throw new InvalidArgumentException("File not writable at $path");
         }
 
-        return $dotenv;
+        return $file;
     }
 
-    /**
-     * @return string
-     */
-    public function get_filepath()
-    {
-        return $this->filepath;
-    }
 
     /**
-     * @return string
+     * Create a new instance, including the file and parent directories.
+     *
+     * @param $path
+     *
+     * @return static
      */
-    public function get_filename()
+    public static function create($path)
     {
-        return $this->filename;
-    }
+        $file = new static($path);
 
-    /**
-     * @return bool
-     */
-    public function exists()
-    {
-        return file_exists($this->filepath);
+        if (! is_dir(dirname($path))) {
+            mkdir(dirname($path), 0755, true);
+        }
+
+        if (! $file->exists()) {
+            touch($path);
+        }
+
+        return $file;
     }
 
     /**
@@ -134,7 +103,7 @@ class File
      */
     public function is_readable()
     {
-        return is_readable($this->filepath);
+        return is_readable($this->path);
     }
 
     /**
@@ -142,27 +111,23 @@ class File
      */
     public function is_writable()
     {
-        return is_writable($this->filepath);
+        return is_writable($this->path);
     }
 
     /**
-     * @param string $text
-     */
-    public function add_line($text)
-    {
-        $this->lines->push(new Line($text));
-    }
-
-    /**
-     * @param $key
+     * @param string|LineInterface $line
      *
-     * @return string
+     * @return $this
      */
-    public function get_pattern_for_key($key)
+    public function add_line($line)
     {
-        $preg_key = preg_quote(trim($key), '/');
+        if (is_string($line)) {
+            $line = Line::parse_raw($line);
+        }
 
-        return sprintf(static::PATTERN_KEY_CAPTURE_FORMAT, $preg_key);
+        $this->lines->add($line);
+
+        return $this;
     }
 
     /**
@@ -170,19 +135,34 @@ class File
      */
     public function load()
     {
-        $this->lines = FileLines::load($this->filepath);
+        $this->lines = FileLines::load($this->path);
 
         return $this;
     }
 
     /**
-     * @return int
+     * Get the full path to the file.
+     *
+     * @return string
      */
+    public function path()
+    {
+        return $this->path;
+    }
+
     public function save()
     {
         $contents = $this->lines->implode(PHP_EOL) . PHP_EOL;
 
-        return file_put_contents($this->filepath, $contents);
+        return file_put_contents($this->path, $contents);
+    }
+
+    /**
+     * @return bool
+     */
+    public function exists()
+    {
+        return file_exists($this->path);
     }
 
     /**
@@ -206,29 +186,30 @@ class File
      */
     public function get($key)
     {
-        return $this->lines->first(function($index, Line $line) use ($key) {
+        return $this->lines->first(function($index, LineInterface $line) use ($key) {
             return $line->key() == $key;
         }, new Line)->value();
     }
 
     /**
-     * @param $key
-     * @param $value
-     *
-     * @return bool
+     * @param        $key
+     * @param        $value
+     * @param string $quote
      */
-    public function set($key, $value)
+    public function set($key, $value, $quote = '')
     {
-        $index = $this->lines->search(function (Line $line) use ($key) {
+        $index = $this->lines->search(function (LineInterface $line) use ($key) {
             return $line->key() == $key;
         });
 
+        $line = new KeyValue($key, $value, $quote);
+
         if ($index > -1) {
-            $this->lines->put($index, Line::fromPair($key, $value));
+            $this->lines->set($index, $line);
             return;
         }
 
-        $this->lines->push(Line::fromPair($key, $value));
+        $this->lines->add($line);
     }
 
     /**
@@ -240,7 +221,7 @@ class File
     {
         $linesBefore = $this->lines->count();
 
-        $this->lines = $this->lines->reject(function (Line $line) use ($key) {
+        $this->lines = $this->lines->reject(function (LineInterface $line) use ($key) {
             return $line->key() == $key;
         });
 
@@ -256,17 +237,25 @@ class File
      */
     public function has_key($key)
     {
-        return (bool) $this->lines->first(function (Line $line) use ($key) {
+        return (bool) $this->lines->first(function (LineInterface $line) use ($key) {
             return $line->key() == $key;
         });
     }
 
     /**
-     * @return array
+     * Get the lines as key => value.
+     *
+     * @return Collection
      */
-    public function get_pairs()
+    public function dictionary()
     {
-        return $this->lines->pairs();
+        $array = $this->lines->pairs()->reduce(function ($pairs, LineInterface $line) {
+            $pairs[ $line->key() ] = $line->value();
+
+            return $pairs;
+        }, []);
+
+        return new Collection($array);
     }
 
 }
