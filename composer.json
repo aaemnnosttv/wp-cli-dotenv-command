@@ -25,7 +25,6 @@
         "files": ["command.php"]
     },
     "autoload-dev": {
-        "files": ["src/functions.php"],
         "classmap": ["tests/Fixtures.php"]
     }
 }
