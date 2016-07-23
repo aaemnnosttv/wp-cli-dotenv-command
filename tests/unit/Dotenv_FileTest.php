@@ -80,12 +80,12 @@ class FileTest extends PHPUnit_Framework_TestCase
         $env  = new File($path);
         $env->load();
 
-        $this->assertEquals('BAR', $env->get('FOO'));
+        $this->assertSame('BAR', $env->get('FOO'));
         $this->assertNull($env->get('BAR'));
 
         $env->set('BAR', 'BAZ');
 
-        $this->assertEquals('BAZ', $env->get('BAR'));
+        $this->assertSame('BAZ', $env->get('BAR'));
     }
 
     /**
@@ -97,15 +97,15 @@ class FileTest extends PHPUnit_Framework_TestCase
         $env  = new File($path);
         $env->load();
 
-        $this->assertEquals('BAR', $env->get('FOO'));
+        $this->assertSame('BAR', $env->get('FOO'));
 
         $env->set('FOO', 'BAR-2');
 
-        $this->assertEquals('BAR-2', $env->get('FOO'));
-        $this->assertEquals(2, $env->size());
+        $this->assertSame('BAR-2', $env->get('FOO'));
+        $this->assertSame(2, $env->size());
 
         $env->set('SECRET', 'stuff');
-        $this->assertEquals(3, $env->size());
+        $this->assertSame(3, $env->size());
     }
 
 
@@ -114,22 +114,20 @@ class FileTest extends PHPUnit_Framework_TestCase
      */
     public function it_does_not_write_to_the_file_until_save_is_called()
     {
-        $filePath = $this->copy_fixture('env-basic');
-        $env      = new File($filePath);
+        $path = $this->copy_fixture('env-basic');
+        $env  = new File($path);
         $env->load();
 
         $this->assertNull($env->get('SOME_KEY'));
         $env->set('SOME_KEY', 'totally set');
 
-        $this->assertEquals('totally set', $env->get('SOME_KEY'));
-        $this->assertEquals('integer', gettype($env->save()));
+        $this->assertSame('totally set', $env->get('SOME_KEY'));
+        $this->assertSame('integer', gettype($env->save()));
         $env->set('SOME_KEY', 'this will be wiped out once we load in a second');
 
         // refresh the instance from the file
         $env->load();
         $this->assertNull($env->get('SOME_KEY'));
-
-        unlink($filePath);
     }
 
     /**
@@ -141,7 +139,7 @@ class FileTest extends PHPUnit_Framework_TestCase
         $env  = new File($path);
         $env->load();
 
-        $this->assertEquals('BAR', $env->get('FOO'));
+        $this->assertSame('BAR', $env->get('FOO'));
 
         $env->remove('FOO');
 
@@ -157,7 +155,7 @@ class FileTest extends PHPUnit_Framework_TestCase
         $env  = new File($path);
         $env->load();
 
-        $this->assertEquals(2, $env->size());
+        $this->assertSame(2, $env->size());
     }
 
     /**
