@@ -240,7 +240,8 @@ class DotenvCommand extends Command
             return (object) compact('key', 'value');
         });
 
-        $formatter = new Formatter($this->args->toArray(), $this->fields());
+        $args      = $this->args->toArray(); // var required - passed by reference
+        $formatter = new Formatter($args, $this->fields());
         $formatter->display_items($items->all());
     }
 
