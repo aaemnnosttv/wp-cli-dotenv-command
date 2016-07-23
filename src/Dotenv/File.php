@@ -115,22 +115,6 @@ class File
     }
 
     /**
-     * @param string|LineInterface $line
-     *
-     * @return $this
-     */
-    public function add_line($line)
-    {
-        if (is_string($line)) {
-            $line = Line::parse_raw($line);
-        }
-
-        $this->lines->add($line);
-
-        return $this;
-    }
-
-    /**
      * @return $this
      */
     public function load()
