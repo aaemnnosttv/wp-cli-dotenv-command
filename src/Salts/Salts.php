@@ -35,7 +35,7 @@ class Salts
         // read in each line as an array
         $response = file(static::GENERATOR_URL);
 
-        if ( ! is_array($response)) {
+        if (! is_array($response)) {
             throw new \Exception('There was a problem fetching salts from the WordPress generator service.');
         }
 
