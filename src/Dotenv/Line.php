@@ -2,46 +2,48 @@
 
 namespace WP_CLI_Dotenv\Dotenv;
 
-use Illuminate\Support\Collection;
-
-class Line
+class Line implements LineInterface
 {
     /**
-     * Single line format
+     * @var string
      */
-    const FORMAT = '%s=%s';
-
-    /**
-     * Pattern to match a var definition
-     */
-    const PATTERN_KEY_CAPTURE_FORMAT = '/^%s(\s+)?=/';
-
-    const QUOTE_SINGLE = '\'';
-
-    const QUOTE_DOUBLE = '"';
-
     protected $text;
 
-
+    /**
+     * Line constructor.
+     *
+     * @param string $text
+     */
     public function __construct($text = null)
     {
         $this->text = $text;
     }
 
-    public static function fromPair($key, $value)
-    {
-        return new static(sprintf(static::FORMAT, $key, $value));
-    }
-
+    /**
+     * @return string
+     */
     public function key()
     {
         $pieces = explode('=', $this->text, 2);
         $pieces = array_map('trim', $pieces);
 
-        return reset($pieces);
+        return (string) reset($pieces);
     }
 
+    /**
+     * @return mixed|string
+     */
     public function value()
+    {
+        return static::clean_quotes($this->value_raw());
+    }
+
+    /**
+     * Get the raw, uncleaned value.
+     *
+     * @return mixed|null|string
+     */
+    public function value_raw()
     {
         if (! strlen($this->text)) {
             return $this->text;
@@ -50,13 +52,24 @@ class Line
         $pieces = explode('=', $this->text, 2);
         $pieces = array_map('trim', $pieces);
 
-        if (is_string(end($pieces))) {
-            return static::clean_quotes(end($pieces));
-        }
-
         return end($pieces);
     }
 
+    /**
+     * Get the quote that wraps the value.
+     *
+     * @return string
+     */
+    public function quote()
+    {
+        return static::wrapping_quote_for($this->value_raw());
+    }
+
+    /**
+     * Whether or not the text is a key=value pair.
+     *
+     * @return bool
+     */
     public function isPair()
     {
         $pieces = explode('=', $this->text, 2);
@@ -65,13 +78,55 @@ class Line
         return 2 === count($pieces);
     }
 
+    /**
+     * @return string
+     */
     public function toString()
     {
-        if ($this->isPair()) {
-            return sprintf(static::FORMAT, $this->key(), $this->value());
+        return (string) $this->text;
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return LineInterface
+     */
+    public static function parse_raw($text)
+    {
+        $line = new static($text);
+
+        if (! $line->isPair()) {
+            return $line;
         }
 
-        return $this->text;
+        return new KeyValue($line->key(), $line->value(), $line->quote());
+    }
+
+    /**
+     * Check if the given character wraps the value.
+     *
+     * @param $char
+     * @param $value
+     *
+     * @return bool
+     */
+    public static function wraps_value($char, $value)
+    {
+        return substr((string) $value,  0, 1) == $char
+            && substr((string) $value, -1, 1) == $char;
+    }
+
+    /**
+     * @param $string
+     *
+     * @return string
+     */
+    public static function wrapping_quote_for($string)
+    {
+        return collect(["'", '"'])
+            ->first(function ($key, $quote) use ($string) {
+                return static::wraps_value($quote, $string);
+            }, '');
     }
 
     /**
@@ -83,14 +138,9 @@ class Line
      */
     public static function clean_quotes($string)
     {
-        $first_char = substr((string) $string,  0, 1);
-        $last_char  = substr((string) $string, -1, 1);
-
-        /**
-         * Test the first and last character for quote type
-         */
-        if ($first_char === $last_char && in_array($first_char, [self::QUOTE_SINGLE, self::QUOTE_DOUBLE])) {
-            return trim($string, $first_char);
+        if (static::wrapping_quote_for($string)) {
+            $string = substr($string, 1); // remove first character
+            $string = substr($string, 0, -1); // remove last
         }
 
         return $string;
