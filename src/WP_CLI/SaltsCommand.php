@@ -43,8 +43,13 @@ class SaltsCommand extends Command
 
         $updated = $this->update_salts($salts, $env, $this->get_flag('force'));
 
-        $skipped = $salts->pluck('skipped')->count();
-        $set = $salts->count() - $skipped;
+        if (! $env->save()) {
+            WP_CLI::error('Failed to update salts.');
+            exit;
+        }
+
+        $skipped = $updated->pluck('skipped');
+        $set = $salts->count() - $skipped->count();
 
         if ($set === count($salts)) {
             WP_CLI::success('Salts generated.');
@@ -85,6 +90,11 @@ class SaltsCommand extends Command
 
         $this->update_salts($salts, $env, true);
 
+        if (! $env->save()) {
+            WP_CLI::error('Failed to update salts.');
+            exit;
+        }
+
         WP_CLI::success('Salts regenerated.');
     }
 
@@ -97,7 +107,7 @@ class SaltsCommand extends Command
      */
     protected function update_salts(Collection $salts, File $file, $force = false)
     {
-        $salts->transform(function ($salt) use ($file, $force) {
+        return $salts->map(function ($salt) use ($file, $force) {
             list($key, $value) = $salt;
 
             if (! $force && $file->has_key($key)) {
@@ -110,8 +120,5 @@ class SaltsCommand extends Command
 
             return $salt;
         });
-
-        $file->save();
     }
-
 }
