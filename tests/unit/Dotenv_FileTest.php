@@ -61,6 +61,19 @@ class FileTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_can_check_for_the_existence_of_a_defined_var_by_key()
+    {
+        $env = File::at($this->get_fixture_path('env-basic'));
+        $env->load();
+
+        $this->assertTrue($env->has_key('FOO'));
+        $this->assertFalse($env->has_key('HAS-NOT'));
+    }
+
+
+    /**
+     * @test
+     */
     public function it_can_get_and_set_values_for_a_given_key()
     {
         $path = $this->get_fixture_path('env-basic');

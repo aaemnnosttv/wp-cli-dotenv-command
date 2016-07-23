@@ -221,7 +221,7 @@ class File
      */
     public function has_key($key)
     {
-        return (bool) $this->lines->first(function (LineInterface $line) use ($key) {
+        return $this->lines->contains(function ($index, LineInterface $line) use ($key) {
             return $line->key() == $key;
         });
     }
