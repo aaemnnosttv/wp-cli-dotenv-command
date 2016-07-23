@@ -2,6 +2,14 @@
 
 namespace WP_CLI_Dotenv\WP_CLI;
 
+/**
+ * Class AssocArgs
+ * @package WP_CLI_Dotenv\WP_CLI
+ *
+ * @property-read $file
+ * @property-read $fields
+ * @property-read $keys
+ */
 class AssocArgs
 {
     private $__args = [];
