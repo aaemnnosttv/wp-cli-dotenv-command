@@ -233,13 +233,7 @@ class File
      */
     public function dictionary()
     {
-        $array = $this->lines->pairs()->reduce(function ($pairs, LineInterface $line) {
-            $pairs[ $line->key() ] = $line->value();
-
-            return $pairs;
-        }, []);
-
-        return new Collection($array);
+        return $this->lines->dictionary();
     }
 
 }

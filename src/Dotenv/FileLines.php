@@ -71,4 +71,20 @@ class FileLines extends Collection
             return $line instanceof KeyValue;
         });
     }
+
+    /**
+     * Get the lines as key => value.
+     *
+     * @return Collection
+     */
+    public function dictionary()
+    {
+        $array = $this->pairs()->reduce(function ($pairs, LineInterface $line) {
+            $pairs[ $line->key() ] = $line->value();
+
+            return $pairs;
+        }, []);
+
+        return new Collection($array);
+    }
 }
