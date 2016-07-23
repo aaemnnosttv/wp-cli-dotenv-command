@@ -2,7 +2,11 @@
 
 namespace WP_CLI_Dotenv\WP_CLI;
 
+use Exception;
+use Illuminate\Support\Collection;
 use WP_CLI;
+use WP_CLI_Dotenv\Dotenv\File;
+use WP_CLI_Dotenv\Salts\Salts;
 
 /**
  * Manage WordPress salts in .env format
@@ -15,6 +19,9 @@ class SaltsCommand extends Command
      * [--file=<path-to-dotenv>]
      * : Path to the environment file.  Default: '.env'
      *
+     * [--force]
+     * : Overwrite any existing salts in the environment file.
+     *
      * @synopsis [--file=<path-to-dotenv>]
      *
      * @when before_wp_load
@@ -25,36 +32,24 @@ class SaltsCommand extends Command
     function generate($_, $assoc_args)
     {
         $this->init_args(func_get_args());
-        $dotenv = get_dotenv_for_write_or_fail($this->args->file);
-        $set    = $skipped = [];
+        $env = $this->get_env_for_write_or_fail();
 
         try {
-            $salts = Salts::fetch_array();
-        } catch (\Exception $e) {
+            $salts = Salts::collect();
+        } catch (Exception $e) {
             WP_CLI::error($e->getMessage());
-
             return;
         }
 
-        foreach ($salts as $salt) {
-            list($key, $value) = $salt;
+        $this->update_salts($env, $salts, $this->get_flag('force'));
 
-            if ($dotenv->has_key($key)) {
-                WP_CLI::line("The '$key' already exists, skipping.");
-                $skipped[] = $key;
-                continue;
-            }
+        $skipped = $salts->pluck('skipped')->count();
+        $set = $salts->count() - $skipped;
 
-            $dotenv->set($key, $value);
-            $set[] = $key;
-        }
-
-        $dotenv->save();
-
-        if (count($set) === count($salts)) {
+        if ($set === count($salts)) {
             WP_CLI::success('Salts generated.');
         } elseif ($set) {
-            WP_CLI::success(count($set) . ' salts set.');
+            WP_CLI::success("$set salts set.");
         }
 
         if ($skipped) {
@@ -79,24 +74,42 @@ class SaltsCommand extends Command
     function regenerate($_, $assoc_args)
     {
         $this->init_args(func_get_args());
-        $dotenv = get_dotenv_for_write_or_fail($this->args->file);
+        $env = $this->get_env_for_write_or_fail();
 
         try {
-            $salts = Salts::fetch_array();
-        } catch (\Exception $e) {
+            $salts = Salts::collect();
+        } catch (Exception $e) {
             WP_CLI::error($e->getMessage());
-
-            return;
+            exit;
         }
 
-        foreach ($salts as $salt) {
-            list($key, $value) = $salt;
-            $dotenv->set($key, $value);
-        }
-
-        $dotenv->save();
+        $this->update_salts($env, $salts, true);
 
         WP_CLI::success('Salts regenerated.');
+    }
+
+    /**
+     * @param File       $file   Environment file
+     * @param Collection $salts  Salts collection
+     * @param bool       $force  Whether or not to force update any existing values
+     */
+    protected function update_salts(File $file, Collection $salts, $force = false)
+    {
+        $salts->transform(function ($salt) use ($file, $force) {
+            list($key, $value) = $salt;
+
+            if (! $force && $file->has_key($key)) {
+                WP_CLI::line("The '$key' already exists, skipping.");
+                $salt['skipped'] = true;
+                return $salt;
+            }
+
+            $file->set($key, $value, "'");
+
+            return $salt;
+        });
+
+        $file->save();
     }
 
 }
