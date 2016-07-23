@@ -3,16 +3,13 @@
 namespace WP_CLI_Dotenv\WP_CLI;
 
 use WP_CLI;
-use WP_CLI_Command;
 use WP_CLI\Formatter;
 
 /**
  * Manage a .env file
  */
-class DotenvCommand extends WP_CLI_Command
+class DotenvCommand extends Command
 {
-    use DotenvArgs;
-    
     /**
      * Initialize the environment file
      *
