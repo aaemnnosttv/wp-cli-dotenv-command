@@ -10,8 +10,12 @@ notifications:
         on_success: never
         on_failure: change
 
-before_script:
-    - composer install
+install: composer install
 
-script:
-    - vendor/bin/phpunit
+before_script:
+    - composer validate --strict
+    - mkdir -p build/logs
+
+script: vendor/bin/phpunit
+
+after_success: travis_retry php vendor/bin/coveralls -v
