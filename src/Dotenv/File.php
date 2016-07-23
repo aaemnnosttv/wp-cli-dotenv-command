@@ -136,9 +136,7 @@ class File
 
     public function save()
     {
-        $contents = $this->lines->implode(PHP_EOL) . PHP_EOL;
-
-        return file_put_contents($this->path, $contents);
+        return file_put_contents($this->path, $this->lines->toString());
     }
 
     /**

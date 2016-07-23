@@ -108,6 +108,21 @@ class FileTest extends PHPUnit_Framework_TestCase
         $this->assertSame(3, $env->size());
     }
 
+    /**
+     * @test
+     */
+    function it_can_save_changes_to_the_file()
+    {
+        $path = $this->copy_fixture('env-basic');
+        $env  = new File($path);
+        $env->load();
+
+        $env->set('SAVE_TEST', 'SAVED');
+        $env->save();
+
+        $env->load();
+        $this->assertSame('SAVED', $env->get('SAVE_TEST'));
+    }
 
     /**
      * @test
@@ -127,7 +142,7 @@ class FileTest extends PHPUnit_Framework_TestCase
 
         // refresh the instance from the file
         $env->load();
-        $this->assertNull($env->get('SOME_KEY'));
+        $this->assertSame('totally set', $env->get('SOME_KEY'));
     }
 
     /**
