@@ -13,11 +13,16 @@ trait Fixtures
      */
     protected function copy_fixture($filename)
     {
-        $filepath = $this->get_fixture_path($filename);
-        $new_path = $filepath . microtime(false) . uniqid();
-        // $new_path = 'php://memory/' . microtime(false) . uniqid();
+        $path = $this->get_fixture_path($filename);
+        $tmp_root = sys_get_temp_dir() . '/wp-cli-dotenv-command';
 
-        copy($filepath, $new_path);
+        if (! is_dir($tmp_root)) {
+            mkdir($tmp_root);
+        }
+
+        $new_path = "$tmp_root/$filename-" . uniqid() . '.tmp';
+
+        copy($path, $new_path);
 
         return $new_path;
     }
