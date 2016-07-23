@@ -4,7 +4,7 @@ namespace WP_CLI_Dotenv\WP_CLI;
 use WP_CLI;
 use WP_CLI_Dotenv\Dotenv\File;
 
-class Command extends \WP_CLI_Command
+class Command
 {
     /**
      * @var AssocArgs
