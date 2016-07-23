@@ -23,9 +23,11 @@ trait Fixtures
     }
 
     /**
-     * [get_fixture_path description]
-     * @param  [type] $path [description]
-     * @return [type]       [description]
+     * Get the absolute path to a fixture file.
+     *
+     * @param  string $path  Relative path to fixture
+     *
+     * @return string
      */
     protected function get_fixture_path($path)
     {
