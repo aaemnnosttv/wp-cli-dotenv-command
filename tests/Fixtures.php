@@ -14,17 +14,29 @@ trait Fixtures
     protected function copy_fixture($filename)
     {
         $path = $this->get_fixture_path($filename);
+        $new_path = $this->temp_path($filename);
+
+        copy($path, $new_path);
+
+        return $new_path;
+    }
+
+    /**
+     * Get a disposable file path for the given filename.
+     *
+     * @param $filename
+     *
+     * @return string
+     */
+    protected function temp_path($filename)
+    {
         $tmp_root = sys_get_temp_dir() . '/wp-cli-dotenv-command';
 
         if (! is_dir($tmp_root)) {
             mkdir($tmp_root);
         }
 
-        $new_path = "$tmp_root/$filename-" . uniqid() . '.tmp';
-
-        copy($path, $new_path);
-
-        return $new_path;
+        return "$tmp_root/$filename-" . uniqid() . '.tmp';
     }
 
     /**
