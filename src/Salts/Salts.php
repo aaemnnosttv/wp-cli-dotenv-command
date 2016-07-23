@@ -2,6 +2,7 @@
 
 namespace WP_CLI_Dotenv\Salts;
 
+use Exception;
 use Illuminate\Support\Collection;
 
 class Salts
@@ -28,18 +29,20 @@ class Salts
 
     /**
      * @return array|void
-     * @throws \Exception
+     * @throws Exception
      */
     public static function fetch_array()
     {
         // read in each line as an array
         $response = file(static::GENERATOR_URL);
 
-        if (! is_array($response)) {
-            throw new \Exception('There was a problem fetching salts from the WordPress generator service.');
+        $parsed = (array) static::parse_php_to_array($response);
+
+        if (! array_filter($parsed)) {
+            throw new Exception('There was a problem fetching salts from the WordPress generator service.');
         }
 
-        return (array) static::parse_php_to_array($response);
+        return $parsed;
     }
 
     /**
