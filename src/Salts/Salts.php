@@ -2,6 +2,8 @@
 
 namespace WP_CLI_Dotenv\Salts;
 
+use Illuminate\Support\Collection;
+
 class Salts
 {
     /**
@@ -13,6 +15,16 @@ class Salts
      * Pattern to match both key and value
      */
     const PATTERN_CAPTURE = '#\'([^\']+)\'#';
+
+    /**
+     * Get a fresh set of salts as a collection.
+     *
+     * @return Collection
+     */
+    public static function collect()
+    {
+        return new Collection(static::fetch_array());
+    }
 
     /**
      * @return array|void
