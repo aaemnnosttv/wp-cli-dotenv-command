@@ -1,9 +1,12 @@
 <?php
 
+use WP_CLI_Dotenv\Fixtures;
 use WP_CLI_Dotenv\Salts\Salts;
 
 class SaltsTest extends PHPUnit_Framework_TestCase
 {
+    use Fixtures;
+
     /**
      * @test
      */
@@ -22,10 +25,5 @@ class SaltsTest extends PHPUnit_Framework_TestCase
                 ['LOGGED_IN_SALT'   , 'c+/,-o{]RCUjmGYd;n.!JZpMfR+PP$8- Tt&m}3JfZ5d%TccrzrIN9+UC^_eH):{'],
                 ['NONCE_SALT'       , 'o*!J1UjHZ3-3GMgtZlnFh5MgT7Aw@.x_+q@,%(Tk4t:-A61niZXa1|/RbSbkG- :'],
             ]);
-    }
-
-    protected function get_fixture_path($path)
-    {
-        return realpath(__DIR__ . '/../fixtures/' . $path);
     }
 }
