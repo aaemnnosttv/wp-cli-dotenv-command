@@ -37,7 +37,7 @@ class SaltsTest extends PHPUnit_Framework_TestCase
      */
     function it_blows_up_if_the_wordpress_org_api_is_down()
     {
-    	var_dump(BrokenSalts::fetch_array());
+        BrokenSalts::fetch_array();
     }
 
 }
