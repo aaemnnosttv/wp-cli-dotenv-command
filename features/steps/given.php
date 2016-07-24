@@ -155,3 +155,11 @@ $steps->Given('/^a misconfigured WP_CONTENT_DIR constant directory$/',
 		file_put_contents( $wp_config_path, $wp_config_code );
 	}
 );
+
+
+$steps->Given('/^a blank \.env file$/',
+    function($world) {
+        $world->create_run_dir();
+
+        touch($world->variables['RUN_DIR'] . '/.env');
+    });
