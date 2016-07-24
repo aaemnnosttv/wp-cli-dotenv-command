@@ -29,8 +29,6 @@ class DotenvCommand extends Command
      * [--force]
      * : Overwrite existing destination file if it exists
      *
-     * @synopsis [--file=<path-to-dotenv>] [--with-salts] [--template=<template-name>] [--interactive] [--force]
-     *
      * @when before_wp_load
      *
      * @param $_
@@ -111,6 +109,12 @@ class DotenvCommand extends Command
      * Set a value in the environment file for a given key.
      * Updates an existing value or creates a new entry.
      *
+     * <key>
+     * : The var key
+     *
+     * <value>
+     * : the value to set.
+     *
      * [--file=<path-to-dotenv>]
      * : Path to the environment file.  Default: '.env'
      *
@@ -119,8 +123,6 @@ class DotenvCommand extends Command
      *
      * [--quote-double]
      * : Wrap the value with double quotes.
-     *
-     * @synopsis <key> <value>
      *
      * @when     before_wp_load
      *
@@ -160,10 +162,11 @@ class DotenvCommand extends Command
     /**
      * Get the value for a given key from the environment file
      *
+     * <key>
+     * : The variable name to retrieve the value for.
+     *
      * [--file=<path-to-dotenv>]
      * : Path to the environment file.  Default: '.env'
-     *
-     * @synopsis <key>
      *
      * @when     before_wp_load
      *
@@ -188,10 +191,11 @@ class DotenvCommand extends Command
     /**
      * Delete a definition from the environment file
      *
+     * <key>...
+     * : One or more keys to remove from the environment file.
+     *
      * [--file=<path-to-dotenv>]
      * : Path to the environment file.  Default: '.env'
-     *
-     * @synopsis <key>...
      *
      * @when     before_wp_load
      *

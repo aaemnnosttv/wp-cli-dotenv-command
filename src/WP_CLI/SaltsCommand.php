@@ -22,8 +22,6 @@ class SaltsCommand extends Command
      * [--force]
      * : Overwrite any existing salts in the environment file.
      *
-     * @synopsis [--file=<path-to-dotenv>]
-     *
      * @when before_wp_load
      *
      * @param $_
@@ -68,8 +66,6 @@ class SaltsCommand extends Command
      *
      * [--file=<path-to-dotenv>]
      * : Path to the environment file.  Default: '.env'
-     *
-     * @synopsis [--file=<path-to-dotenv>]
      *
      * @when before_wp_load
      *
