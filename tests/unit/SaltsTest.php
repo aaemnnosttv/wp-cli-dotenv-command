@@ -13,11 +13,12 @@ class SaltsTest extends PHPUnit_Framework_TestCase
      */
     function it_parses_the_php_from_the_wordpress_generator_into_an_array()
     {
-        $salts = StubSalts::collect();
+        $salts = new Salts($this->get_fixture_path('wp-org-api-generated-salts-php'));
+        $collection = $salts->collect();
 
-        $this->assertInstanceOf(Collection::class, $salts);
+        $this->assertInstanceOf(Collection::class, $collection);
 
-        $this->assertEquals($salts->all(),
+        $this->assertEquals($collection->all(),
             [
                 ['AUTH_KEY'         , '$.*g{oO(WxCzKMZ#ud{#i{XETVyN7affnoZ>c9lp+0L,AFq3_FA!;MR5t~7%~0bk'],
                 ['SECURE_AUTH_KEY'  , '#ISZfl8<$4hUN}-hMY|Q>Utt.;vQ2Wi1+n|[Bw*afW(u(+~)(%_| L/!]|$9W(_s'],
@@ -37,17 +38,6 @@ class SaltsTest extends PHPUnit_Framework_TestCase
      */
     function it_blows_up_if_the_wordpress_org_api_is_down()
     {
-        BrokenSalts::fetch_array();
+        (new Salts($this->get_fixture_path('wp-org-api-down')))->collect();
     }
-
-}
-
-class StubSalts extends Salts
-{
-    const GENERATOR_URL = __DIR__ . '/wp-org-api-generated-salts-php';
-}
-
-class BrokenSalts extends Salts
-{
-    const GENERATOR_URL = __DIR__ . '/wp-org-api-down';
 }
