@@ -186,6 +186,17 @@ VARS;
     );
 });
 
+$steps->Given('/^a directory with a \.env file containing:$/', function($world, $contents) {
+    $world->create_run_dir();
+
+    touch($world->variables['RUN_DIR'] . '/.env');
+
+    file_put_contents(
+        $world->variables['RUN_DIR'] . '/.env',
+        $contents
+    );
+});
+
 $steps->Given('/^the \.env file contains a line "([^"]*)"$/', function($world, $line) {
     file_put_contents(
         $world->variables['RUN_DIR'] . '/.env',
