@@ -23,3 +23,7 @@ script:
     - WP_CLI_BIN_DIR=$PWD/vendor/bin vendor/bin/behat
 
 after_success: travis_retry php vendor/bin/coveralls -v
+
+cache:
+  directories:
+    - vendor
