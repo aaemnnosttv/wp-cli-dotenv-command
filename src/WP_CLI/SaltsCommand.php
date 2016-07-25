@@ -3,16 +3,28 @@
 namespace WP_CLI_Dotenv\WP_CLI;
 
 use Exception;
-use Illuminate\Support\Collection;
 use WP_CLI;
 use WP_CLI_Dotenv\Dotenv\File;
 use WP_CLI_Dotenv\Salts\Salts;
+use Illuminate\Support\Collection;
 
 /**
  * Manage WordPress salts in .env format
  */
 class SaltsCommand extends Command
 {
+    /**
+     * The target environment file.
+     * @var File
+     */
+    protected $env;
+
+    /**
+     * Salts parsed from generator service.
+     * @var Collection
+     */
+    protected $salts;
+
     /**
      * Fetch some fresh salts and add them to the environment file if they do not already exist
      *
@@ -30,26 +42,17 @@ class SaltsCommand extends Command
     public function generate($_, $assoc_args)
     {
         $this->init_args(func_get_args());
-        $env = $this->get_env_for_write_or_fail();
-        $api = new Salts();
 
-        try {
-            $salts = $api->collect();
-        } catch (Exception $e) {
-            WP_CLI::error($e->getMessage());
-            return;
-        }
+        $updated = $this->update_salts($this->get_flag('force'));
 
-        $updated = $this->update_salts($salts, $env, $this->get_flag('force'));
-
-        if (! $env->save()) {
+        if (! $this->env->save()) {
             WP_CLI::error('Failed to update salts.');
         }
 
         $skipped = $updated->pluck('skipped')->filter();
-        $set = $salts->count() - $skipped->count();
+        $set = $this->salts->count() - $skipped->count();
 
-        if ($set === count($salts)) {
+        if ($set === count($this->salts)) {
             WP_CLI::success('Salts generated.');
         } elseif ($set) {
             WP_CLI::success("$set salts set.");
@@ -75,19 +78,10 @@ class SaltsCommand extends Command
     public function regenerate($_, $assoc_args)
     {
         $this->init_args(func_get_args());
-        $env = $this->get_env_for_write_or_fail();
-        $api = new Salts();
 
-        try {
-            $salts = $api->collect();
-        } catch (Exception $e) {
-            WP_CLI::error($e->getMessage());
-            exit;
-        }
+        $this->update_salts(true);
 
-        $this->update_salts($salts, $env, true);
-
-        if (! $env->save()) {
+        if (! $this->env->save()) {
             WP_CLI::error('Failed to update salts.');
         }
 
@@ -95,26 +89,43 @@ class SaltsCommand extends Command
     }
 
     /**
-     * @param Collection $salts Salts collection
-     * @param File       $file  Environment file
-     * @param bool       $force Whether or not to force update any existing values
+     * Update salts in the environment file
+     *
+     * @param bool $force Whether or not to force update any existing values
      *
      * @return Collection
      */
-    protected function update_salts(Collection $salts, File $file, $force = false)
+    protected function update_salts($force = false)
     {
-        return $salts->map(function ($salt) use ($file, $force) {
+        return $this->salts->map(function ($salt) use ($force) {
             list($key, $value) = $salt;
 
-            if (! $force && $file->has_key($key)) {
+            if (! $force && $this->env->has_key($key)) {
                 WP_CLI::line("The '$key' already exists, skipping.");
                 $salt['skipped'] = true;
                 return $salt;
             }
 
-            $file->set($key, $value, "'");
+            $this->env->set($key, $value, "'");
 
             return $salt;
         });
+    }
+
+    /**
+     * @param array $args
+     */
+    protected function init_args($args)
+    {
+        parent::init_args($args);
+
+        $this->env = $this->get_env_for_write_or_fail();
+        $api = new Salts();
+
+        try {
+            $this->salts = $api->collect();
+        } catch (Exception $e) {
+            WP_CLI::error($e->getMessage());
+        }
     }
 }
