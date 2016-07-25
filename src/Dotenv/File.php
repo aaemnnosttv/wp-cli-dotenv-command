@@ -4,6 +4,8 @@ namespace WP_CLI_Dotenv\Dotenv;
 
 use InvalidArgumentException;
 use Illuminate\Support\Collection;
+use WP_CLI_Dotenv\Dotenv\Exception\FilePermissionsException;
+use WP_CLI_Dotenv\Dotenv\Exception\NonExistentFileException;
 
 /**
  * Class File
@@ -38,19 +40,22 @@ class File
      *
      * @param $path
      *
-     * @throws InvalidArgumentException
+     * @throws NonExistentFileException
+     * @throws FilePermissionsException
      *
      * @return static
      */
     public static function at($path)
     {
-        $file = new static($path);
-
-        if (! is_readable($path)) {
-            throw new InvalidArgumentException("File not readable at $path");
+        if (! file_exists($path)) {
+            throw new NonExistentFileException("File does not exist at $path");
         }
 
-        return $file;
+        if (! is_readable($path)) {
+            throw new FilePermissionsException("File not readable at $path");
+        }
+
+        return new static($path);
     }
 
     /**
@@ -58,7 +63,7 @@ class File
      *
      * @param $path
      *
-     * @throws InvalidArgumentException
+     * @throws FilePermissionsException
      *
      * @return static
      */
@@ -67,7 +72,7 @@ class File
         $file = static::at($path);
 
         if (! is_writable($path)) {
-            throw new InvalidArgumentException("File not writable at $path");
+            throw new FilePermissionsException("File not writable at $path");
         }
 
         return $file;

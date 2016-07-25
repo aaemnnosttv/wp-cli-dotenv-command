@@ -30,11 +30,22 @@ class FileTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException InvalidArgumentException
+     * @expectedException \WP_CLI_Dotenv\Dotenv\Exception\NonExistentFileException
+     */
+    public function it_throws_an_exception_if_the_file_does_not_exist()
+    {
+        File::at($this->get_fixture_path('env-unreadable'));
+    }
+
+    /**
+     * @test
+     * @expectedException \WP_CLI_Dotenv\Dotenv\Exception\FilePermissionsException
      */
     public function it_throws_an_exception_if_the_file_is_not_readable()
     {
-        File::at($this->get_fixture_path('env-unreadable'));
+        $path = $this->copy_fixture('env-basic');
+        chmod($path, 0000);
+        File::at($path);
     }
 
     /**
@@ -49,7 +60,7 @@ class FileTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException InvalidArgumentException
+     * @expectedException \WP_CLI_Dotenv\Dotenv\Exception\FilePermissionsException
      */
     public function it_throws_an_exception_if_the_file_is_not_writable()
     {
