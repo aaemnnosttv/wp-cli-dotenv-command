@@ -55,7 +55,6 @@ class Command
             return File::writable($this->resolve_file_path())->load();
         } catch (\Exception $e) {
             WP_CLI::error($e->getMessage());
-            die;
         }
     }
 

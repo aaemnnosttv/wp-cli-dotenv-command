@@ -44,7 +44,6 @@ class SaltsCommand extends Command
 
         if (! $env->save()) {
             WP_CLI::error('Failed to update salts.');
-            exit;
         }
 
         $skipped = $updated->pluck('skipped')->filter();
@@ -90,7 +89,6 @@ class SaltsCommand extends Command
 
         if (! $env->save()) {
             WP_CLI::error('Failed to update salts.');
-            exit;
         }
 
         WP_CLI::success('Salts regenerated.');
