@@ -41,7 +41,6 @@ class Command
             return File::at($this->resolve_file_path())->load();
         } catch (\Exception $e) {
             WP_CLI::error($e->getMessage());
-            die;
         }
     }
 
