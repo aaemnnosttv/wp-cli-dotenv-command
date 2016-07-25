@@ -31,9 +31,10 @@ class SaltsCommand extends Command
     {
         $this->init_args(func_get_args());
         $env = $this->get_env_for_write_or_fail();
+        $api = new Salts();
 
         try {
-            $salts = Salts::collect();
+            $salts = $api->collect();
         } catch (Exception $e) {
             WP_CLI::error($e->getMessage());
             return;
@@ -76,9 +77,10 @@ class SaltsCommand extends Command
     {
         $this->init_args(func_get_args());
         $env = $this->get_env_for_write_or_fail();
+        $api = new Salts();
 
         try {
-            $salts = Salts::collect();
+            $salts = $api->collect();
         } catch (Exception $e) {
             WP_CLI::error($e->getMessage());
             exit;
