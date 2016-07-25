@@ -173,16 +173,6 @@ ENV;
     );
 });
 
-$steps->Given('/^the \.env file has a defined value for GREETING$/', function($world) {
-    $file_contents = <<<ENV
-GREETING = Hi there
-ENV;
-    file_put_contents(
-        $world->variables['RUN_DIR'] . '/.env',
-        $file_contents
-    );
-});
-
 $steps->Given('/^some of the keys have quoted values$/', function($world) {
     $vars = <<<VARS
 SINGLEQUOTED='single-quoted value'
@@ -192,6 +182,28 @@ VARS;
     file_put_contents(
         $world->variables['RUN_DIR'] . '/.env',
         $vars,
+        FILE_APPEND
+    );
+});
+
+$steps->Given('/^the \.env file contains a line "([^"]*)"$/', function($world, $line) {
+    file_put_contents(
+        $world->variables['RUN_DIR'] . '/.env',
+        $line,
+        FILE_APPEND
+    );
+});
+
+$steps->Given('/^the \.env file has vars defined for "([^"]*)"$/', function($world, $commaSeparatedKeys) {
+    $keys = explode(',', $commaSeparatedKeys);
+    $values = array_map('strtolower', $keys);
+    $lines = array_map(function ($key, $value) {
+        return "$key=$value";
+    }, $keys, $values);
+
+    file_put_contents(
+        $world->variables['RUN_DIR'] . '/.env',
+        join("\n", $lines),
         FILE_APPEND
     );
 });

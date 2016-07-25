@@ -20,7 +20,7 @@ Feature: Test 'dotenv get' sub-command.
 
   Scenario: It returns the value for the key
     Given a directory with a .env file
-    And the .env file has a defined value for GREETING
+    And the .env file contains a line "GREETING = Hi there"
     When I run `wp dotenv get GREETING`
     Then STDOUT should be:
     """
