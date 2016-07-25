@@ -27,7 +27,7 @@ class SaltsCommand extends Command
      * @param $_
      * @param $assoc_args
      */
-    function generate($_, $assoc_args)
+    public function generate($_, $assoc_args)
     {
         $this->init_args(func_get_args());
         $env = $this->get_env_for_write_or_fail();
@@ -72,7 +72,7 @@ class SaltsCommand extends Command
      * @param $_
      * @param $assoc_args
      */
-    function regenerate($_, $assoc_args)
+    public function regenerate($_, $assoc_args)
     {
         $this->init_args(func_get_args());
         $env = $this->get_env_for_write_or_fail();
