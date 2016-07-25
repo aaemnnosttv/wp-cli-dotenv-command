@@ -46,7 +46,7 @@ class SaltsCommand extends Command
             exit;
         }
 
-        $skipped = $updated->pluck('skipped');
+        $skipped = $updated->pluck('skipped')->filter();
         $set = $salts->count() - $skipped->count();
 
         if ($set === count($salts)) {
@@ -55,7 +55,7 @@ class SaltsCommand extends Command
             WP_CLI::success("$set salts set.");
         }
 
-        if ($skipped) {
+        if (! $skipped->isEmpty()) {
             WP_CLI::line('Some keys were already defined in the environment file.');
             WP_CLI::line("Use 'dotenv salts regenerate' to update them.");
         }
