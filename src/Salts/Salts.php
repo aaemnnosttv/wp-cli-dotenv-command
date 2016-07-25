@@ -8,35 +8,48 @@ use Illuminate\Support\Collection;
 class Salts
 {
     /**
-     * WordPress.org Salt Generator Service URL
-     */
-    const GENERATOR_URL = 'https://api.wordpress.org/secret-key/1.1/salt/';
-
-    /**
      * Pattern to match both key and value
      */
     const PATTERN_CAPTURE = '#\'([^\']+)\'#';
+
+    /**
+     * @var string
+     */
+    protected $source;
+
+    /**
+     * Salts constructor.
+     *
+     * @param string $source
+     */
+    public function __construct($source = 'https://api.wordpress.org/secret-key/1.1/salt/')
+    {
+        $this->source = $source;
+    }
 
     /**
      * Get a fresh set of salts as a collection.
      *
      * @return Collection
      */
-    public static function collect()
+    public function collect()
     {
-        return new Collection(static::fetch_array());
+        return new Collection($this->fetch_array());
     }
 
     /**
-     * @return array|void
+     * Fetch the salts from the generator and return the parsed response.
+     *
      * @throws Exception
+     *
+     * @return array|void
      */
-    public static function fetch_array()
+    protected function fetch_array()
     {
         // read in each line as an array
-        $response = file(static::GENERATOR_URL);
+        $response = file($this->source);
 
-        $parsed = (array) static::parse_php_to_array($response);
+        $parsed = (array) $this->parse_php_to_array($response);
 
         if (! array_filter($parsed)) {
             throw new Exception('There was a problem fetching salts from the WordPress generator service.');
@@ -52,7 +65,7 @@ class Salts
      *
      * @return array
      */
-    public static function parse_php_to_array(array $php)
+    protected function parse_php_to_array(array $php)
     {
         return array_map(function ($line) {
             // capture everything between single quotes
