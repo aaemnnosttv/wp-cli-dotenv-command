@@ -10,8 +10,8 @@ Feature: Test 'dotenv get' sub-command.
       """
 
   Scenario: It errors when trying to get non-existent keys
-    Given a directory with a .env file
-    And the .env file has keys and values
+    Given an empty directory
+    And a .env file
     When I try `wp dotenv get ASDFXYZ`
     Then STDERR should contain:
       """
@@ -19,7 +19,8 @@ Feature: Test 'dotenv get' sub-command.
       """
 
   Scenario: It returns the value for the key
-    Given a directory with a .env file containing:
+    Given an empty directory
+    And a .env file:
       """
       GREETING = Hi there
       """
@@ -30,14 +31,19 @@ Feature: Test 'dotenv get' sub-command.
       """
 
   Scenario: It returns values without any wrapping quotes, if any
-    Given a directory with a .env file containing:
+    Given an empty directory
+    And a .env file:
       """
       SINGLEQUOTED='single-quoted value'
       DOUBLEQUOTED="double-quoted value"
       """
-    When I run `wp dotenv get SINGLEQUOTED && wp dotenv get DOUBLEQUOTED`
+    When I run `wp dotenv get SINGLEQUOTED`
     Then STDOUT should be:
       """
       single-quoted value
+      """
+    When I run `wp dotenv get DOUBLEQUOTED`
+    Then STDOUT should be:
+      """
       double-quoted value
       """

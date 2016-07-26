@@ -12,10 +12,7 @@ Feature: Test 'dotenv init' command.
 
   Scenario: It will not overwrite an existing .env file by default
     Given an empty directory
-    And a .env file:
-    """
-
-    """
+    And a .env file
     When I try `wp dotenv init`
     Then STDERR should contain:
       """

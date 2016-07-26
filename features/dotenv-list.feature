@@ -1,7 +1,8 @@
 Feature: Test 'dotenv list' sub-command.
 
   Scenario: It lists all defined vars in the environment file
-    Given a directory with a .env file containing:
+    Given an empty directory
+    And a .env file:
       """
       FOO=BAR
       BAR = Drinks
