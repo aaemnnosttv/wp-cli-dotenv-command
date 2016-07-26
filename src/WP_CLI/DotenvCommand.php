@@ -289,9 +289,7 @@ class DotenvCommand extends Command
     protected function prompt_all(File $env)
     {
         $env->dictionary()->each(function ($value, $key) use ($env) {
-            if (strlen($user_value = $this->prompt($key, $value))) {
-                $env->set($key, $value);
-            }
+            $env->set($key, $this->prompt($key, $value));
         });
 
         $env->save();
