@@ -49,7 +49,7 @@ class Salts
         // read in each line as an array
         $response = file($this->source);
 
-        $parsed = (array) $this->parse_php_to_array($response);
+        $parsed = (array) $this->parse_salts_from_php($response);
 
         if (! array_filter($parsed)) {
             throw new Exception('There was a problem fetching salts from the WordPress generator service.');
@@ -65,7 +65,7 @@ class Salts
      *
      * @return array
      */
-    protected function parse_php_to_array(array $php)
+    protected function parse_salts_from_php(array $php)
     {
         return array_map(function ($line) {
             // capture everything between single quotes
