@@ -91,7 +91,7 @@ class DotenvCommand extends Command
         copy($env_template->path(), $env->path());
 
         // we can't use WP-CLI --prompt because we're working off the template, not the synopsis
-        if (! $interactive = $this->get_flag('interactive')) {
+        if (! $this->get_flag('interactive')) {
             return;
         }
 
