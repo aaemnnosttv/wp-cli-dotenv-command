@@ -2,6 +2,8 @@
 
 namespace WP_CLI_Dotenv\WP_CLI;
 
+use Illuminate\Support\Collection;
+
 /**
  * Class AssocArgs
  * @package WP_CLI_Dotenv\WP_CLI
@@ -12,46 +14,61 @@ namespace WP_CLI_Dotenv\WP_CLI;
  */
 class AssocArgs
 {
-    private $__args = [];
+    /**
+     * User provided arguments.
+     * @var array
+     */
+    protected $args;
 
-    protected $file = '.env';
+    /**
+     * Default arguments.
+     * @var array
+     */
+    protected $defaults = [
+        'file'   => '.env',
+        'fields' => ['key', 'value'],
+        'keys'   => [],
+    ];
 
-    protected $fields = ['key', 'value'];
-
-    protected $keys = [];
-
+    /**
+     * AssocArgs constructor.
+     *
+     * @param array $args
+     */
     public function __construct(array $args = [])
     {
-        $this->__args = $args;
-        $this->fill($args);
-    }
-
-    protected function fill(array $args)
-    {
-        foreach ($args as $key => $value) {
-            $this->$key = $value;
-        }
+        $this->args = $args;
     }
 
     /**
-     * The original unmodified arguments
+     * The original unmodified arguments.
+     *
      * @return array
      */
     public function original()
     {
-        return $this->__args;
+        return $this->args;
     }
 
+    /**
+     * Get the single array of arguments.
+     *
+     * @return array
+     */
     public function toArray()
     {
-        $args = get_object_vars($this);
-        unset($args['__args']);
-
-        return $args;
+        return array_merge($this->defaults, $this->args);
     }
 
+    /**
+     * Magic getter.
+     *
+     * @param $prop
+     *
+     * @return mixed
+     */
     public function __get($prop)
     {
-        return isset($this->$prop) ? $this->$prop : null;
+        return Collection::make($this->toArray())->get($prop);
     }
 }
