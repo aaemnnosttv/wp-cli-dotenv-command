@@ -156,65 +156,7 @@ $steps->Given('/^a misconfigured WP_CONTENT_DIR constant directory$/',
 	}
 );
 
-$steps->Given('/^a directory with a \.env file$/', function($world) {
-    $world->create_run_dir();
-
+$steps->Given('/^a \.env file$/', function($world) {
     touch($world->variables['RUN_DIR'] . '/.env');
 });
 
-$steps->Given('/^the \.env file has keys and values$/', function($world) {
-    $file_contents = <<<ENV
-FOO=BAR
-ABC=XYZ
-ENV;
-    file_put_contents(
-        $world->variables['RUN_DIR'] . '/.env',
-        $file_contents
-    );
-});
-
-$steps->Given('/^some of the keys have quoted values$/', function($world) {
-    $vars = <<<VARS
-SINGLEQUOTED='single-quoted value'
-DOUBLEQUOTED="double-quoted value"
-VARS;
-
-    file_put_contents(
-        $world->variables['RUN_DIR'] . '/.env',
-        $vars,
-        FILE_APPEND
-    );
-});
-
-$steps->Given('/^a directory with a \.env file containing:$/', function($world, $contents) {
-    $world->create_run_dir();
-
-    touch($world->variables['RUN_DIR'] . '/.env');
-
-    file_put_contents(
-        $world->variables['RUN_DIR'] . '/.env',
-        $contents
-    );
-});
-
-$steps->Given('/^the \.env file contains a line "([^"]*)"$/', function($world, $line) {
-    file_put_contents(
-        $world->variables['RUN_DIR'] . '/.env',
-        $line,
-        FILE_APPEND
-    );
-});
-
-$steps->Given('/^the \.env file has vars defined for "([^"]*)"$/', function($world, $commaSeparatedKeys) {
-    $keys = explode(',', $commaSeparatedKeys);
-    $values = array_map('strtolower', $keys);
-    $lines = array_map(function ($key, $value) {
-        return "$key=$value";
-    }, $keys, $values);
-
-    file_put_contents(
-        $world->variables['RUN_DIR'] . '/.env',
-        join("\n", $lines),
-        FILE_APPEND
-    );
-});
