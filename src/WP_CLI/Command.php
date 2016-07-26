@@ -12,6 +12,8 @@ class Command
     protected $args;
 
     /**
+     * Initialize the arguments.
+     *
      * @param $args array All arguments passed to the sub-command method
      */
     protected function init_args($args)
@@ -20,6 +22,8 @@ class Command
     }
 
     /**
+     * Get flag value for command line option.
+     *
      * @param      $key
      * @param null $default
      *
@@ -59,7 +63,7 @@ class Command
     }
 
     /**
-     * Get the absolute path to the file
+     * Get the absolute path to the file.
      *
      * @param null $file  The path to resolve, defaults to argument passed value.
      *
@@ -88,7 +92,7 @@ class Command
 
 
     /**
-     * CLI input prompt
+     * Prompt the user for input at the command line or use a default.
      *
      * @param $question
      * @param $default

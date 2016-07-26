@@ -12,7 +12,7 @@ use WP_CLI_Dotenv\Dotenv\File;
 class DotenvCommand extends Command
 {
     /**
-     * Initialize the environment file
+     * Initialize the environment file.
      *
      * [--file=<path-to-dotenv>]
      * : Path to the environment file.  Default: '.env'

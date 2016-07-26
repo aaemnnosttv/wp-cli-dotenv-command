@@ -8,11 +8,12 @@ use Illuminate\Support\Collection;
 class Salts
 {
     /**
-     * Pattern to match both key and value
+     * Pattern to match both key and value from php define statements.
      */
     const PATTERN_CAPTURE = '#\'([^\']+)\'#';
 
     /**
+     * Resource to load salts from.
      * @var string
      */
     protected $source;

@@ -26,7 +26,7 @@ class SaltsCommand extends Command
     protected $salts;
 
     /**
-     * Fetch some fresh salts and add them to the environment file if they do not already exist
+     * Fetch some fresh salts and add them to the environment file if they do not already exist.
      *
      * [--file=<path-to-dotenv>]
      * : Path to the environment file.  Default: '.env'
@@ -65,7 +65,7 @@ class SaltsCommand extends Command
     }
 
     /**
-     * Regenerate salts for the environment file
+     * Regenerate salts for the environment file.
      *
      * [--file=<path-to-dotenv>]
      * : Path to the environment file.  Default: '.env'
@@ -89,7 +89,7 @@ class SaltsCommand extends Command
     }
 
     /**
-     * Update salts in the environment file
+     * Update salts in the environment file.
      *
      * @param bool $force Whether or not to force update any existing values
      *
@@ -113,6 +113,8 @@ class SaltsCommand extends Command
     }
 
     /**
+     * Initialize properties for the command.
+     *
      * @param array $args
      */
     protected function init_args($args)
