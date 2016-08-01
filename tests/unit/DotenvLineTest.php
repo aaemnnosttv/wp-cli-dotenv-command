@@ -2,7 +2,7 @@
 
 use WP_CLI_Dotenv\Dotenv\Line;
 
-class Dotenv_LineTest extends PHPUnit_Framework_TestCase
+class DotenvLineTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @test

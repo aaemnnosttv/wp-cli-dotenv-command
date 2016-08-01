@@ -2,7 +2,7 @@
 
 use WP_CLI_Dotenv\Dotenv\File;
 
-class FileTest extends PHPUnit_Framework_TestCase
+class DotenvFileTest extends PHPUnit_Framework_TestCase
 {
     use WP_CLI_Dotenv\Fixtures;
 
