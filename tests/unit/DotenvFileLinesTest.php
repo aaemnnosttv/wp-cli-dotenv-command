@@ -20,10 +20,10 @@ class DotenvFileLinesTest extends PHPUnit_Framework_TestCase
      */
     function it_has_a_method_for_loading_from_a_file()
     {
-        $filepath = $this->get_fixture_path('env-basic');
-        $lines = FileLines::load($filepath);
+        $path = $this->get_fixture_path('env-basic');
+        $lines = FileLines::load($path);
 
-        $this->assertEquals(count(file($filepath)), $lines->count());
+        $this->assertEquals(count(file($path)), $lines->count());
     }
 
     /**
@@ -31,9 +31,9 @@ class DotenvFileLinesTest extends PHPUnit_Framework_TestCase
      */
     function it_can_return_itself_as_a_single_string()
     {
-        $filepath = $this->get_fixture_path('env-basic');
-        $lines = FileLines::load($filepath);
-        $contents = file_get_contents($filepath);
+        $path = $this->get_fixture_path('env-basic');
+        $lines = FileLines::load($path);
+        $contents = file_get_contents($path);
 
         $this->assertSame($contents, $lines->toString());
     }
@@ -43,8 +43,8 @@ class DotenvFileLinesTest extends PHPUnit_Framework_TestCase
      */
     function it_can_return_itself_as_a_collection_of_key_value_pairs()
     {
-        $filepath = $this->get_fixture_path('env-basic');
-        $lines = FileLines::load($filepath);
+        $path = $this->get_fixture_path('env-basic');
+        $lines = FileLines::load($path);
 
         $this->assertSame('FOO', $lines->pairs()->first()->key());
         $this->assertSame('BAR', $lines->pairs()->first()->value());
