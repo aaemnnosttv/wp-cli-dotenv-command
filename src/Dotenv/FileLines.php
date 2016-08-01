@@ -34,16 +34,79 @@ class FileLines extends Collection
     }
 
     /**
+     * Get the value of a defined variable.
+     *
+     * @param mixed $key
+     * @param null  $default
+     *
+     * @return mixed
+     */
+    public function getDefinition($key, $default = null)
+    {
+        return $this->toDictionary()->get($key, $default);
+    }
+
+    /**
      * Put a new line at a given key/index.
      *
-     * @param mixed         $key
+     * @param mixed         $index
      * @param LineInterface $line
      *
      * @return $this
      */
-    public function set($key, LineInterface $line)
+    public function set($index, LineInterface $line)
     {
-        parent::put($key, $line);
+        parent::put($index, $line);
+
+        return $this;
+    }
+
+    /**
+     * Update the line by key, or add it if there is no existing line for the same key.
+     *
+     * @param LineInterface $line
+     */
+    public function updateOrAdd(LineInterface $line)
+    {
+        $key = $line->key();
+
+        $index = $this->search(function (LineInterface $line) use ($key) {
+            return $line->key() == $key;
+        });
+
+        if ($index > -1) {
+            $this->set($index, $line);
+        } else {
+            $this->add($line);
+        }
+    }
+
+    /**
+     * Check if the collection has a definition for the given variable name.
+     *
+     * @param $varName
+     *
+     * @return bool
+     */
+    public function hasDefinition($varName)
+    {
+        return $this->contains(function ($index, LineInterface $line) use ($varName) {
+            return $line->key() == $varName;
+        });
+    }
+
+    /**
+     * Remove the definition by the variable name.
+     *
+     * @param string $varName
+     *
+     * @return $this
+     */
+    public function removeDefinition($varName)
+    {
+        $this->items = $this->reject(function (LineInterface $line) use ($varName) {
+            return $line->key() == $varName;
+        })->all();
 
         return $this;
     }
@@ -77,7 +140,7 @@ class FileLines extends Collection
      *
      * @return Collection
      */
-    public function dictionary()
+    public function toDictionary()
     {
         $array = $this->pairs()->reduce(function ($pairs, LineInterface $line) {
             $pairs[ $line->key() ] = $line->value();

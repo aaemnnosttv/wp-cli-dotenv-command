@@ -173,46 +173,39 @@ class File
      */
     public function get($key)
     {
-        return $this->lines->first(function($index, LineInterface $line) use ($key) {
-            return $line->key() == $key;
-        }, new Line)->value();
+        return $this->lines->getDefinition($key);
     }
 
     /**
+     * Set a variable definition.
+     *
      * @param        $key
      * @param        $value
      * @param string $quote
+     *
+     * @return $this
      */
     public function set($key, $value, $quote = '')
     {
-        $index = $this->lines->search(function (LineInterface $line) use ($key) {
-            return $line->key() == $key;
-        });
+        $this->lines->updateOrAdd(new KeyValue($key, $value, $quote));
 
-        $line = new KeyValue($key, $value, $quote);
-
-        if ($index > -1) {
-            $this->lines->set($index, $line);
-            return;
-        }
-
-        $this->lines->add($line);
+        return $this;
     }
 
     /**
+     * Remove a variable definition.
+     *
      * @param $key
      *
      * @return int Lines removed
      */
     public function remove($key)
     {
-        $linesBefore = $this->lines->count();
+        $linesBefore = $this->lineCount();
 
-        $this->lines = $this->lines->reject(function (LineInterface $line) use ($key) {
-            return $line->key() == $key;
-        });
+        $this->lines->removeDefinition($key);
 
-        return $linesBefore - $this->lines->count();
+        return $linesBefore - $this->lineCount();
     }
 
     /**
@@ -224,9 +217,7 @@ class File
      */
     public function has_key($key)
     {
-        return $this->lines->contains(function ($index, LineInterface $line) use ($key) {
-            return $line->key() == $key;
-        });
+        return $this->lines->hasDefinition($key);
     }
 
     /**
@@ -236,7 +227,6 @@ class File
      */
     public function dictionary()
     {
-        return $this->lines->dictionary();
+        return $this->lines->toDictionary();
     }
-
 }
