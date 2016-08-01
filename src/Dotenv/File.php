@@ -141,12 +141,19 @@ class File
         return $this->path;
     }
 
+    /**
+     * Write the lines to the file.
+     *
+     * @return int
+     */
     public function save()
     {
         return file_put_contents($this->path, $this->lines->toString());
     }
 
     /**
+     * Check if the file exists
+     *
      * @return bool
      */
     public function exists()
