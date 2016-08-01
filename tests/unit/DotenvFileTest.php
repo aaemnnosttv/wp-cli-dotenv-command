@@ -14,8 +14,8 @@ class DotenvFileTest extends PHPUnit_Framework_TestCase
         $path = $this->get_fixture_path('env-basic');
         $env  = new File($path);
 
-        $this->assertTrue($env->is_readable());
-        $this->assertTrue($env->is_writable());
+        $this->assertTrue($env->isReadable());
+        $this->assertTrue($env->isWritable());
     }
 
     /**
@@ -90,8 +90,8 @@ class DotenvFileTest extends PHPUnit_Framework_TestCase
         $env = File::at($this->get_fixture_path('env-basic'));
         $env->load();
 
-        $this->assertTrue($env->has_key('FOO'));
-        $this->assertFalse($env->has_key('HAS-NOT'));
+        $this->assertTrue($env->hasKey('FOO'));
+        $this->assertFalse($env->hasKey('HAS-NOT'));
     }
 
 
@@ -126,10 +126,10 @@ class DotenvFileTest extends PHPUnit_Framework_TestCase
         $env->set('FOO', 'BAR-2');
 
         $this->assertSame('BAR-2', $env->get('FOO'));
-        $this->assertSame(2, $env->size());
+        $this->assertSame(2, $env->lineCount());
 
         $env->set('SECRET', 'stuff');
-        $this->assertSame(3, $env->size());
+        $this->assertSame(3, $env->lineCount());
     }
 
     /**
@@ -194,7 +194,7 @@ class DotenvFileTest extends PHPUnit_Framework_TestCase
         $env  = new File($path);
         $env->load();
 
-        $this->assertSame(2, $env->size());
+        $this->assertSame(2, $env->lineCount());
     }
 
     /**

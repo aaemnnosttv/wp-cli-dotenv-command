@@ -70,7 +70,7 @@ class DotenvCommand extends Command
      */
     protected function init_from_template(File $env, $template)
     {
-        if (! $env->is_writable()) {
+        if (! $env->isWritable()) {
             WP_CLI::error('Environment file is not readable at: ' . $env->path());
 
             return;
@@ -180,7 +180,7 @@ class DotenvCommand extends Command
 
         $env = $this->get_env_for_read_or_fail();
 
-        if (! $env->has_key($key)) {
+        if (! $env->hasKey($key)) {
             WP_CLI::error("Key '$key' not found.");
             exit;
         }

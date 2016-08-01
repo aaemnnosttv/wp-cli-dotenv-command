@@ -100,7 +100,7 @@ class SaltsCommand extends Command
         return $this->salts->map(function ($salt) use ($force) {
             list($key, $value) = $salt;
 
-            if (! $force && $this->env->has_key($key)) {
+            if (! $force && $this->env->hasKey($key)) {
                 WP_CLI::line("The '$key' already exists, skipping.");
                 $salt['skipped'] = true;
                 return $salt;

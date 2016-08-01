@@ -47,15 +47,17 @@ class File
      */
     public static function at($path)
     {
-        if (! file_exists($path)) {
+        $file = new static($path);
+
+        if (! $file->exists()) {
             throw new NonExistentFileException("File does not exist at $path");
         }
 
-        if (! is_readable($path)) {
+        if (! $file->isReadable()) {
             throw new FilePermissionsException("File not readable at $path");
         }
 
-        return new static($path);
+        return $file;
     }
 
     /**
@@ -106,7 +108,7 @@ class File
      *
      * @return bool
      */
-    public function is_readable()
+    public function isReadable()
     {
         return is_readable($this->path);
     }
@@ -114,7 +116,7 @@ class File
     /**
      * @return bool
      */
-    public function is_writable()
+    public function isWritable()
     {
         return is_writable($this->path);
     }
@@ -155,7 +157,7 @@ class File
     /**
      * @return int
      */
-    public function size()
+    public function lineCount()
     {
         return $this->lines->count();
     }
@@ -215,7 +217,7 @@ class File
      *
      * @return bool
      */
-    public function has_key($key)
+    public function hasKey($key)
     {
         return $this->lines->hasDefinition($key);
     }
