@@ -142,12 +142,10 @@ class FileLines extends Collection
      */
     public function toDictionary()
     {
-        $array = $this->pairs()->reduce(function ($pairs, LineInterface $line) {
+        return $this->pairs()->reduce(function (Collection $pairs, LineInterface $line) {
             $pairs[ $line->key() ] = $line->value();
 
             return $pairs;
-        }, []);
-
-        return new Collection($array);
+        }, new Collection);
     }
 }
