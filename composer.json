@@ -1,7 +1,7 @@
 {
     "name": "aaemnnosttv/wp-cli-dotenv-command",
     "description": "Dotenv commands for WP-CLI",
-    "homepage": "https://github.com/aaemnnosttv/wp-cli-dotenv-command",
+    "homepage": "https://aaemnnost.tv/wp-cli-commands/dotenv/",
     "support": {
         "issues": "https://github.com/aaemnnosttv/wp-cli-dotenv-command/issues"
     },
@@ -9,7 +9,8 @@
     "authors": [
         {
             "name": "Evan Mattson",
-            "email": "me@aaemnnost.tv"
+            "email": "me@aaemnnost.tv",
+            "homepage": "https://aaemnnost.tv"
         }
     ],
     "scripts": {
