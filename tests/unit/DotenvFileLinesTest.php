@@ -50,33 +50,19 @@ class DotenvFileLinesTest extends PHPUnit_Framework_TestCase
         $this->assertSame('BAR', $lines->pairs()->first()->value());
     }
 
-
     /**
      * @test
      */
-    // function it_parses_each_line_into_an_array_of_its_parts()
-    // {
-    //     $filepath = $this->get_fixture_path('env-basic');
-    //     $lines = FileLines::fromFile($filepath);
-    //
-    //     $keys = ['key','value','type'];
-    //     $this->assertArraySubset($keys, array_keys($lines[0]));
-    // }
+     function it_can_remove_a_line_by_the_key()
+     {
+         $path = $this->get_fixture_path('env-basic');
+         $lines = FileLines::load($path);
 
+         $this->assertEquals('BAR', $lines->getDefinition('FOO'));
 
+         $lines->removeDefinition('FOO');
 
-    /**
-     * @test
-     */
-    // public function it_can_remove_a_line_by_the_key()
-    // {
-    //     $filepath = $this->get_fixture_path('env-basic');
-    //
-    //     $this->assertEquals('BAR', $dotenv->get('FOO'));
-    //
-    //     $dotenv->remove('FOO');
-    //
-    //     $this->assertNull($dotenv->get('FOO'));
-    // }
+         $this->assertEmpty($lines->getDefinition('FOO'));
+     }
 
 }
