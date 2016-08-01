@@ -5,9 +5,6 @@ php:
     - 5.6
     - 7.0
 
-env:
-    - WP_CLI_BIN_DIR="$TRAVIS_BUILD_DIR/vendor/bin"
-
 install: composer install
 
 before_script:
@@ -17,8 +14,8 @@ before_script:
     - mysql -e 'GRANT ALL PRIVILEGES ON wp_cli_test.* TO "wp_cli_test"@"localhost" IDENTIFIED BY "password1"' -uroot
 
 script:
-    - vendor/bin/phpunit
-    - vendor/bin/behat
+    - composer run-phpunit
+    - composer run-behat
 
 after_success: travis_retry php vendor/bin/coveralls -v
 
