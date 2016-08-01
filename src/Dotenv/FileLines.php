@@ -47,21 +47,6 @@ class FileLines extends Collection
     }
 
     /**
-     * Put a new line at a given key/index.
-     *
-     * @param mixed         $index
-     * @param LineInterface $line
-     *
-     * @return $this
-     */
-    public function set($index, LineInterface $line)
-    {
-        parent::put($index, $line);
-
-        return $this;
-    }
-
-    /**
      * Update the line by key, or add it if there is no existing line for the same key.
      *
      * @param LineInterface $line
@@ -75,7 +60,7 @@ class FileLines extends Collection
         });
 
         if ($index > -1) {
-            $this->set($index, $line);
+            $this->put($index, $line);
         } else {
             $this->add($line);
         }
