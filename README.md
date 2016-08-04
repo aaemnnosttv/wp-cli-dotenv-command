@@ -35,18 +35,18 @@ Initializes a new environment file.
 By default, this command will only create the environment file if it does not already exist, but it can do much more.
 
 #### `--template=<file>`
-You may optionally initialize the environment file using another file as a template (eg. `.env.example` is a common convention).
-Run `wp dotenv init --template=.env.example` to use that file (assuming it exists) as the basis for the new environment file.
+You may optionally initialize the environment file using another file as a template (eg: `.env.example`, a common convention).
+Run `wp dotenv init --template=.env.example` to use that file as the basis for the new environment file.
 
-By default, the new file will be a copy of the template, but you may also set your new values on the fly interactively!
-Pass `--interactive` with the same command to be prompted for each defined variable in the template.  You may specify a new value to use, or simply leave it blank to keep the template-defined value.  Any other lines/comments from the template are preserved.
+By default, the new file will be a copy of the template, but you may also set new values on the fly interactively!
+Passing the `--interactive` flag with the same command will prompt for each defined variable in the template.  You may specify a new value to use, or simply leave it blank to keep the template-defined value.  Any other lines/comments from the template are preserved.
 
 #### `--with-salts`
-Initialize the environment file with some fresh salts provided by the wordpress.org salt generator service.
-Any existing keys by the same name will not be overridden (unless they are all the same).  See `wp dotenv salts`.
+Initialize the new environment file with fresh salts provided by the wordpress.org salt generator service.
+Any existing keys by the same name will not be overwritten.  [See `salts`](#salts).
 
 #### `--force`
-Overwrites an existing file, if it exists.
+Overwrites an existing environment file, if it exists.
 
 ## `list`
 Prints out all of the key/value pairs as defined in the environment file.  
@@ -66,7 +66,9 @@ Remove one or more definitions for the given keys from the environment file.
 ## `salts`
 
 #### `generate`
-Initialize the environment file with some fresh salts provided by the [wordpress.org salt generator service](https://api.wordpress.org/secret-key/1.1/salt/).  Any existing keys by the same name will not be overridden, with one exception.  If all of the defined salts in the environment file have the same value, then it is assumed that they are placeholders and will be updated.  It is also possible to force regenerate them using `--force`, or simply use the `regenerate` command (see below).
+Adds variable definitions to the environment file with fresh salts provided by the [wordpress.org salt generator service](https://api.wordpress.org/secret-key/1.1/salt/).  
+
+By default, any existing keys by the same name will not be overwritten.  However, if all of the defined salts in the environment file have the same value, then it is assumed that they are placeholders and will be updated.  It is also possible to force regenerate them using `--force`, or simply use the `regenerate` command (see below).
 
 #### `regenerate`
 Same as `generate`, but will update all keys for salts with new values.
