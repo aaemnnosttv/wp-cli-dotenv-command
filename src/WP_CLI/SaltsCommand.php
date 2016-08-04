@@ -43,7 +43,7 @@ class SaltsCommand extends Command
     {
         $this->init_args(func_get_args());
 
-        $updated = $this->update_salts($this->get_flag('force'));
+        $updated = $this->update_salts($this->get_flag('force') ?: $this->salts_are_placeholders());
 
         if (! $this->env->save()) {
             WP_CLI::error('Failed to update salts.');
@@ -86,6 +86,20 @@ class SaltsCommand extends Command
         }
 
         WP_CLI::success('Salts regenerated.');
+    }
+
+    /**
+     * Perform a simple check to see if all defined salts are using a placeholder.
+     * @return bool
+     */
+    protected function salts_are_placeholders()
+    {
+        return $this->env->dictionary()
+            // salts are stored as a list [key, value]
+            ->only($this->salts->pluck(0)->all()) // strip the env down to just the salts
+            ->values()
+            ->unique()
+            ->count() === 1; // 1 unique means they are all the same
     }
 
     /**

@@ -56,6 +56,28 @@ Feature: Test 'dotenv init' command.
       FOO=BAR
       """
 
+  Scenario: When initializing the environment from a template file with salts, it should update them.
+    Given an empty directory
+    And a .env.example file:
+      """
+      FOO=BAR
+      SECRET=shh
+      AUTH_KEY=generateme
+      SECURE_AUTH_KEY=generateme
+      LOGGED_IN_KEY=generateme
+      NONCE_KEY=generateme
+      AUTH_SALT=generateme
+      SECURE_AUTH_SALT=generateme
+      LOGGED_IN_SALT=generateme
+      NONCE_SALT=generateme
+      """
+    When I run `wp dotenv init --template=.env.example --with-salts`
+    Then the .env file should exist
+    And the .env file should not contain:
+      """
+      generateme
+      """
+
   Scenario: It can initialize the environment file interactively from the template.
     Given an empty directory
     And a .env.example file:

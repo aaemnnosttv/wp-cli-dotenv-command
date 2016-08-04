@@ -62,5 +62,25 @@ Feature: Manage WordPress Salts in a .env file.
       'updateme'
       """
 
-
-
+  Scenario: The generate command should update all salts, if they are all the same.
+    Given an empty directory
+    And a .env file:
+      """
+      AUTH_KEY='updateme'
+      SECURE_AUTH_KEY='updateme'
+      LOGGED_IN_KEY='updateme'
+      NONCE_KEY='updateme'
+      AUTH_SALT='updateme'
+      SECURE_AUTH_SALT='updateme'
+      LOGGED_IN_SALT='updateme'
+      NONCE_SALT='updateme'
+      """
+    When I run `wp dotenv salts generate`
+    Then STDOUT should be:
+      """
+      Success: Salts generated.
+      """
+    And the .env file should not contain:
+      """
+      updateme
+      """
