@@ -24,6 +24,23 @@ Feature: Test 'dotenv init' command.
       Success: .env created.
       """
 
+  Scenario: It sets the salts on init when using the --with-salts flag
+    Given an empty directory
+    When I run `wp dotenv init --with-salts`
+    Then the .env file should exist
+    And the .env file should contain:
+      """
+      AUTH_KEY='
+      """
+    And the .env file should contain:
+      """
+      AUTH_SALT='
+      """
+    And the .env file should contain:
+      """
+      NONCE_SALT='
+      """
+
   Scenario: It can initialize a new environment file from a template.
     Given an empty directory
     And a .env.example file:

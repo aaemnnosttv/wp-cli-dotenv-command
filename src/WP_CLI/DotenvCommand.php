@@ -58,7 +58,7 @@ class DotenvCommand extends Command
         }
 
         if ($this->get_flag('with-salts')) {
-            WP_CLI::run_command(['env', 'salts', 'generate'], ['file' => $env->path()]);
+            WP_CLI::run_command(['dotenv', 'salts', 'generate'], ['file' => $env->path()]);
         }
 
         WP_CLI::success("$path created.");
