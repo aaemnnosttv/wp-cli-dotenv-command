@@ -13,7 +13,8 @@ Feature: Manage WordPress Salts in a .env file.
     Given an empty directory
     And a .env file:
       """
-      AUTH_KEY=12345
+      AUTH_KEY=super-secret
+      SECURE_AUTH_KEY=even-more-secret
       """
     When I run `wp dotenv salts generate`
     Then STDOUT should contain:
@@ -27,7 +28,8 @@ Feature: Manage WordPress Salts in a .env file.
       """
     And the .env file should contain:
       """
-      AUTH_KEY=12345
+      AUTH_KEY=super-secret
+      SECURE_AUTH_KEY=even-more-secret
       """
     When I run `wp dotenv salts generate --force`
     Then STDOUT should be:
@@ -36,7 +38,11 @@ Feature: Manage WordPress Salts in a .env file.
       """
     And the .env file should not contain:
       """
-      'AUTH_KEY=12345'
+      super-secret
+      """
+    And the .env file should not contain:
+      """
+      even-more-secret
       """
 
   Scenario: The regenerate sub-command updates any existing values
