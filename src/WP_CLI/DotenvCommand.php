@@ -178,12 +178,11 @@ class DotenvCommand extends Command
 
         $env = $this->get_env_for_read_or_fail();
 
-        if (! $env->hasKey($key)) {
+        if (is_null($value = $env->get($key))) {
             WP_CLI::error("Key '$key' not found.");
-            exit;
         }
 
-        WP_CLI::line($env->get($key));
+        WP_CLI::line($value);
     }
 
     /**
