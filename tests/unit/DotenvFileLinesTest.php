@@ -89,7 +89,7 @@ class DotenvFileLinesTest extends PHPUnit_Framework_TestCase
                  'FOO' => 'BAR',
                  'FOX' => 'red'
              ],
-             $lines->whereKeysLike('FO[O,X]')->toDictionary()->all()
+             $lines->whereKeysLike('FO[OX]')->toDictionary()->all()
          );
 
          $this->assertSame(

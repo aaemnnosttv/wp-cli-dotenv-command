@@ -41,16 +41,16 @@ Feature: Test 'dotenv list' sub-command.
       """
       HEY=there
       GREETING=howdy
-      FOO=BAR
+      FOOT=Big
       FB_KEY=secret
       FOOD=hot bar
       """
-    When I run `wp dotenv list HEY FO{O,OD} *EE*`
+    When I run `wp dotenv list HEY FOO? *EE*`
     Then STDOUT should be a table containing rows:
       | key       | value               |
       | HEY       | there               |
       | GREETING  | howdy               |
-      | FOO       | BAR                 |
+      | FOOT      | Big                 |
       | FOOD      | hot bar             |
     And STDOUT should not contain:
       """
