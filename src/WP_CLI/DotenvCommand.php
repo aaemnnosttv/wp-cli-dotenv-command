@@ -82,8 +82,6 @@ class DotenvCommand extends Command
             $env_template = File::at($template_path);
         } catch (\Exception $e) {
             WP_CLI::error("Template file is not readable at: $template_path");
-
-            return;
         }
 
         WP_CLI::line('Initializing from template: ' . $env_template->path());
