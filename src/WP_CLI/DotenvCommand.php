@@ -219,6 +219,9 @@ class DotenvCommand extends Command
     /**
      * List the defined variables from the environment file
      *
+     * [<pattern>...]
+     * : Key names or glob-style patterns to match.
+     *
      * [--format=<format>]
      * : Accepted values: table, csv, json, count. Default: table
      *
@@ -228,18 +231,18 @@ class DotenvCommand extends Command
      * @subcommand list
      * @when       before_wp_load
      *
-     * @param $_
-     * @param $assoc_args
+     * @param array $patterns   Glob-style patterns to match against env keys
+     * @param array $assoc_args
      */
-    public function _list($_, $assoc_args)
+    public function _list($patterns, $assoc_args)
     {
         $this->init_args(func_get_args());
         $env   = $this->get_env_for_read_or_fail();
-        $vars  = $this->keys() ? $env->dictionary()->only($this->keys()) : $env->dictionary();
 
-        $items = $vars->map(function ($value, $key) {
-            return (object) compact('key', 'value');
-        });
+        $items = $env->dictionaryWithKeysMatching($patterns)
+            ->map(function ($value, $key) {
+                return (object) compact('key', 'value');
+            });
 
         $args      = $this->args->toArray(); // var required - passed by reference
         $formatter = new Formatter($args, $this->fields());
