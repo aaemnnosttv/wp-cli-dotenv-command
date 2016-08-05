@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 class FileLines extends Collection
 {
     /**
-     * Create a new collection of file lines from the file at given path.
+     * Create a new instance from the given file path.
      *
      * @param $filePath
      *
@@ -15,10 +15,31 @@ class FileLines extends Collection
      */
     public static function load($filePath)
     {
-        return static::make(file($filePath, FILE_IGNORE_NEW_LINES))
-            ->map(function ($lineText) {
-                return Line::parse_raw($lineText);
-            });
+        return static::fromArray(file($filePath, FILE_IGNORE_NEW_LINES));
+    }
+
+    /**
+     * Return a new instance using an array of raw lines.
+     *
+     * @param array $lines
+     *
+     * @return mixed
+     */
+    public static function fromArray(array $lines)
+    {
+        return (new static($lines))->parse();
+    }
+
+    /**
+     * Parse the raw lines into their respective classes.
+     *
+     * @return static
+     */
+    public function parse()
+    {
+        return $this->map(function ($lineText) {
+            return Line::parse_raw($lineText);
+        });
     }
 
     /**
