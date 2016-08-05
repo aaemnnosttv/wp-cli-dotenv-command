@@ -250,21 +250,6 @@ class DotenvCommand extends Command
     }
 
     /**
-     * Get the keys passed in the arguments.
-     *
-     * Multiple keys can be passed in the cli arguments as a comma-separated list.
-     * This converts those to an array, if passed.
-     *
-     * @return array
-     */
-    protected function keys()
-    {
-        return is_string($this->args->keys)
-            ? explode(',', $this->args->keys)
-            : $this->args->keys;
-    }
-
-    /**
      * Get the fields to display as passed in the arguments.
      *
      * Multiple keys can be passed in the cli arguments as a comma-separated list.

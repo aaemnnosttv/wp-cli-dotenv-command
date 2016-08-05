@@ -10,7 +10,6 @@ use Illuminate\Support\Collection;
  *
  * @property-read $file
  * @property-read $fields
- * @property-read $keys
  */
 class AssocArgs
 {
@@ -27,7 +26,6 @@ class AssocArgs
     protected $defaults = [
         'file'   => '.env',
         'fields' => ['key', 'value'],
-        'keys'   => [],
     ];
 
     /**
