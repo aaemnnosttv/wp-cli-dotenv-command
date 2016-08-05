@@ -65,4 +65,41 @@ class DotenvFileLinesTest extends PHPUnit_Framework_TestCase
          $this->assertEmpty($lines->getDefinition('FOO'));
      }
 
+     /**
+      * @test
+      */
+     function it_can_return_a_subset_using_globs_to_match_keys()
+     {
+         $lines = FileLines::fromArray([
+            'FOO=BAR',
+            'FOX=red',
+            'FOOD=hot bar',
+         ]);
+
+         $this->assertSame(
+             [
+                 'FOO'  => 'BAR',
+                 'FOOD' => 'hot bar'
+             ],
+             $lines->whereKeysLike('FOO*')->toDictionary()->all()
+         );
+
+         $this->assertSame(
+             [
+                 'FOO' => 'BAR',
+                 'FOX' => 'red'
+             ],
+             $lines->whereKeysLike('FO[O,X]')->toDictionary()->all()
+         );
+
+         $this->assertSame(
+             [
+                 'FOO' => 'BAR',
+                 'FOX' => 'red'
+             ],
+             $lines->whereKeysLike(['FOO', 'FOX'])->toDictionary()->all()
+         );
+
+     }
+
 }

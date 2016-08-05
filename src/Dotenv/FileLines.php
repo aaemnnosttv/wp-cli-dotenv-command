@@ -154,4 +154,33 @@ class FileLines extends Collection
             return $pairs;
         }, new Collection);
     }
+
+    /**
+     * Get a subset of lines where the key matches at least one of the given glob-style patterns.
+     *
+     * @param string|array|Collection $patterns
+     *
+     * @return static
+     */
+    public function whereKeysLike($patterns)
+    {
+        if (! $patterns instanceof Collection) {
+            $patterns = new Collection((array) $patterns);
+        }
+
+        /* @var Collection $patterns */
+
+        if ($patterns->filter()->isEmpty()) {
+            return new static($this->all());
+        }
+
+        /**
+         * Return a subset of pairs that match any of the given patterns.
+         */
+        return $this->pairs()->filter(function (LineInterface $line) use ($patterns) {
+            return $patterns->contains(function ($index, $pattern) use ($line) {
+                return fnmatch($pattern, $line->key());
+            });
+        });
+    }
 }
