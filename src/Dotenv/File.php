@@ -238,4 +238,16 @@ class File
     {
         return $this->lines->toDictionary();
     }
+
+    /**
+     * Get the lines as key => value pairs, where the keys match the given glob-style patterns.
+     *
+     * @param $patterns
+     *
+     * @return Collection
+     */
+    public function dictionaryWithKeysMatching($patterns)
+    {
+        return $this->lines->whereKeysLike($patterns)->toDictionary();
+    }
 }
