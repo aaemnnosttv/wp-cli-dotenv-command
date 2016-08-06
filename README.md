@@ -1,6 +1,7 @@
 # WP-CLI Dotenv Command
 
 [![Travis Build](https://img.shields.io/travis/aaemnnosttv/wp-cli-dotenv-command/master.svg)](https://travis-ci.org/aaemnnosttv/wp-cli-dotenv-command)
+[![Packagist](https://img.shields.io/packagist/v/aaemnnosttv/wp-cli-dotenv-command.svg)](https://packagist.org/packages/aaemnnosttv/wp-cli-dotenv-command)
 
 ```
 NAME
