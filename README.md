@@ -48,9 +48,19 @@ Any existing keys by the same name will not be overwritten.  [See `salts`](#salt
 #### `--force`
 Overwrites an existing environment file, if it exists.
 
-## `list`
-Prints out all of the key/value pairs as defined in the environment file.  
-Supports all of the same options for `--format=<out>` you've known to grow and love (`table`,`json`,`csv`,..etc).  Default: `table`.
+## `list [<pattern>...]`
+Prints out all of the key/value pairs as defined in the environment file.
+
+You may also optionally limit the output to specific keys, or even keys that match simple patterns using glob pattern syntax.
+Eg: `wp dotenv list DB_* *AWS*` would produce a list with the following hypotheical keys:
+```
+DB_NAME=...
+DB_PASS=...
+S3_AWS_ID=...
+S3_AWS_SECRET=...
+```
+
+The `list` command supports all of the same options for `--format=<out>` you've known to grow and love (`table`,`json`,`csv`,..etc).  Default: `table`.
 
 ## `get <key>`
 Get the value of a defined key from the environment file.
