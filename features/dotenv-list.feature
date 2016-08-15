@@ -17,6 +17,22 @@ Feature: Test 'dotenv list' sub-command.
       | WEATHER   | HOT                 |
       | DRINKS    | Sound really good.  |
 
+  Scenario: It does not include any commented-out variables in the list.
+    Given an empty directory
+    And a .env file:
+      """
+      FOO=BAR
+      #BAR=BAZ
+      """
+    And I run `wp dotenv list`
+    Then STDOUT should be a table containing rows:
+      | key  | value  |
+      | FOO  | BAR    |
+    And STDOUT should not contain:
+      """
+      BAZ
+      """
+
   Scenario: It can limit the listed variables using a glob pattern.
     Given an empty directory
     And a .env file:

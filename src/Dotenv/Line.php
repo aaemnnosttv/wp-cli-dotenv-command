@@ -72,6 +72,10 @@ class Line implements LineInterface
      */
     public function isPair()
     {
+        if (0 === strpos(trim($this->text), '#')) {
+            return false;
+        }
+        
         $pieces = explode('=', $this->text, 2);
         $pieces = array_map('trim', $pieces);
 
