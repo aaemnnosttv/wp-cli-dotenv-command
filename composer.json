@@ -15,7 +15,7 @@
     ],
     "scripts": {
         "run-phpunit": "vendor/bin/phpunit --colors=always",
-        "run-behat": "WP_CLI_BIN_DIR=$PWD/vendor/bin vendor/bin/behat --ansi"
+        "run-behat": "WP_CLI_BIN_DIR=$PWD/vendor/bin vendor/bin/behat --ansi --format=progress"
     },
     "require": {
         "php": "^5.5 | ^7.0",
