@@ -19,7 +19,7 @@
     },
     "require": {
         "php": "^5.5 | ^7.0",
-        "tightenco/collect": "^5.2"
+        "tightenco/collect": "5.2.*"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8",
