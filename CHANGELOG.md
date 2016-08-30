@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.2 (2016-08-30)
+- Fixed a regression when installed with tightenco/collect 5.3 and up
+
 ## v1.0.1 (2016-08-15)
 - Fixed a regression where commented-out variables were showing up in `list`
 
