@@ -87,7 +87,7 @@ class Command
         /**
          * realpath will return false if path does not exist
          */
-        return realpath($path) ?: $path;
+        return realpath($path) ?: str_replace('/./', '/', $path);
     }
 
 
