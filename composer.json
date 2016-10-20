@@ -1,6 +1,7 @@
 {
     "name": "aaemnnosttv/wp-cli-dotenv-command",
     "description": "Dotenv commands for WP-CLI",
+    "type": "wp-cli-package",
     "homepage": "https://aaemnnost.tv/wp-cli-commands/dotenv/",
     "support": {
         "issues": "https://github.com/aaemnnosttv/wp-cli-dotenv-command/issues"
