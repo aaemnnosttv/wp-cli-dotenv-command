@@ -2,7 +2,6 @@
 
 namespace WP_CLI_Dotenv\Dotenv;
 
-use InvalidArgumentException;
 use Illuminate\Support\Collection;
 use WP_CLI_Dotenv\Dotenv\Exception\FilePermissionsException;
 use WP_CLI_Dotenv\Dotenv\Exception\NonExistentFileException;
