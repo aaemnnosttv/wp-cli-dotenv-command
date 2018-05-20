@@ -2,8 +2,6 @@
 
 namespace WP_CLI_Dotenv\Dotenv;
 
-use Illuminate\Support\Collection;
-
 class FileLines extends Collection
 {
     /**

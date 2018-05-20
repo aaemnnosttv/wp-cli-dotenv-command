@@ -4,9 +4,9 @@ namespace WP_CLI_Dotenv\WP_CLI;
 
 use Exception;
 use WP_CLI;
+use WP_CLI_Dotenv\Dotenv\Collection;
 use WP_CLI_Dotenv\Dotenv\File;
 use WP_CLI_Dotenv\Salts\Salts;
-use Illuminate\Support\Collection;
 
 /**
  * Manage WordPress salts in .env format
