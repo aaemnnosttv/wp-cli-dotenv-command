@@ -4,7 +4,7 @@ namespace WP_CLI_Dotenv\Dotenv;
 
 use Traversable;
 
-class Collection implements \ArrayAccess, \IteratorAggregate
+class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 {
     protected $items;
 
@@ -26,6 +26,27 @@ class Collection implements \ArrayAccess, \IteratorAggregate
     public function all()
     {
         return $this->items;
+    }
+
+    public function keys()
+    {
+        return new static(array_keys($this->items));
+    }
+
+    public function values()
+    {
+        return new static(array_values($this->items));
+    }
+
+    public function each($callback)
+    {
+        foreach ($this->items as $key => $value) {
+            if (false === $callback($value, $key)) {
+                break;
+            }
+        }
+
+        return $this;
     }
 
     public function map($callback)
@@ -97,6 +118,19 @@ class Collection implements \ArrayAccess, \IteratorAggregate
         return $this->offsetExists($key) ? $this->offsetGet($key) : $default;
     }
 
+    public function pluck($prop)
+    {
+        return $this->map(function ($item) use ($prop) {
+            if (is_array($item) && array_key_exists($prop, $item)) {
+                return $item[$prop];
+            }
+            if (is_object($item) && property_exists($item, $prop)) {
+                return $item->$prop;
+            }
+            return null;
+        });
+    }
+
     public function put($key, $value)
     {
         $this->offsetSet($key, $value);
@@ -121,6 +155,18 @@ class Collection implements \ArrayAccess, \IteratorAggregate
         array_push($this->items, $value);
 
         return $this;
+    }
+
+    public function only($keys)
+    {
+        return $this->filter(function ($value, $key) use ($keys) {
+            return in_array($key, $keys);
+        });
+    }
+
+    public function unique()
+    {
+        return new static(array_unique($this->items));
     }
 
     /**
