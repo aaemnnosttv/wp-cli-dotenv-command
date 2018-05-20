@@ -1,19 +1,10 @@
 <?php
 
 use WP_CLI_Dotenv\Dotenv\FileLines;
-use Illuminate\Support\Collection;
 
 class DotenvFileLinesTest extends PHPUnit_Framework_TestCase
 {
     use WP_CLI_Dotenv\Fixtures;
-
-    /**
-     * @test
-     */
-    function it_is_a_collection()
-    {
-        $this->assertInstanceOf(Collection::class, new FileLines);
-    }
 
     /**
      * @test
