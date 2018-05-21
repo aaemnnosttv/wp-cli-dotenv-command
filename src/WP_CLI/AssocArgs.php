@@ -2,7 +2,7 @@
 
 namespace WP_CLI_Dotenv\WP_CLI;
 
-use Illuminate\Support\Collection;
+use WP_CLI_Dotenv\Dotenv\Collection;
 
 /**
  * Class AssocArgs

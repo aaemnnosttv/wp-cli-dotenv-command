@@ -2,7 +2,6 @@
 
 use WP_CLI_Dotenv\Fixtures;
 use WP_CLI_Dotenv\Salts\Salts;
-use Illuminate\Support\Collection;
 
 class SaltsTest extends PHPUnit_Framework_TestCase
 {
@@ -15,8 +14,6 @@ class SaltsTest extends PHPUnit_Framework_TestCase
     {
         $salts = new Salts($this->get_fixture_path('wp-org-api-generated-salts-php'));
         $collection = $salts->collect();
-
-        $this->assertInstanceOf(Collection::class, $collection);
 
         $this->assertEquals($collection->all(),
             [

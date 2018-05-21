@@ -127,7 +127,7 @@ class Line implements LineInterface
      */
     public static function wrapping_quote_for($string)
     {
-        return collect(["'", '"'])
+        return Collection::make(["'", '"'])
             ->first(function ($key, $quote) use ($string) {
                 return static::wraps_value($quote, $string);
             }, '');

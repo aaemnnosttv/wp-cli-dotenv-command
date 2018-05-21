@@ -3,7 +3,7 @@
 namespace WP_CLI_Dotenv\Salts;
 
 use Exception;
-use Illuminate\Support\Collection;
+use WP_CLI_Dotenv\Dotenv\Collection;
 
 class Salts
 {

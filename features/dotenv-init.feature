@@ -2,8 +2,15 @@ Feature: Test 'dotenv init' command.
 
   Scenario: It can create a .env file in the working directory
     Given an empty directory
+    When I run `pwd`
+    And save STDOUT as {PWD}
+
     When I run `wp dotenv init`
     Then the .env file should exist
+    And STDOUT should be:
+      """
+      Success: {PWD}/.env created.
+      """
 
   Scenario: It can create a .env file using a different filename
     Given an empty directory

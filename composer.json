@@ -15,17 +15,19 @@
         }
     ],
     "scripts": {
-        "run-phpunit": "vendor/bin/phpunit --colors=always",
-        "run-behat": "WP_CLI_BIN_DIR=$PWD/vendor/bin vendor/bin/behat --ansi --format=progress"
+        "test": [
+            "@composer run-phpunit",
+            "@composer run-behat"
+        ],
+        "run-phpunit": "phpunit --colors=always",
+        "run-behat": "behat --ansi"
     },
     "require": {
-        "php": "^5.5 | ^7.0",
-        "tightenco/collect": "5.2.*"
+        "php": "^5.6 | ^7.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.8",
-        "wp-cli/wp-cli": "^0.22.0",
-        "satooshi/php-coveralls": "^1.0",
+        "phpunit/phpunit": "^5.0",
+        "wp-cli/wp-cli": "^1.0",
         "behat/behat": "2.5.*"
     },
     "autoload": {

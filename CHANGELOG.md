@@ -1,7 +1,12 @@
 # Changelog
 
+## v2.0.0 (2018-05-21)
+- Drop support for PHP 5.5
+- Remove dependency on beloved `tightenco/collect` library
+- Package now has zero dependencies (other than WP-CLI)
+
 ## v1.0.2 (2016-08-30)
-- Fixed a regression when installed with tightenco/collect 5.3 and up
+- Fixed a regression when installed with `tightenco/collect` 5.3 and up
 
 ## v1.0.1 (2016-08-15)
 - Fixed a regression where commented-out variables were showing up in `list`
