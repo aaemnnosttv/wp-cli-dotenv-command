@@ -15,6 +15,10 @@
         }
     ],
     "scripts": {
+        "test": [
+            "@composer run-phpunit",
+            "@composer run-behat"
+        ],
         "run-phpunit": "phpunit --colors=always",
         "run-behat": "behat --ansi"
     },
