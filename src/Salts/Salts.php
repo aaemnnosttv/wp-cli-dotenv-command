@@ -72,7 +72,10 @@ class Salts
         try {
             $secret_keys = new Collection();
             foreach ( $this->constant_list as $key ) {
-                $secret_keys->push( trim( self::unique_key() ) );
+                $secret_keys->push( array(
+                    $key,
+                    trim( self::unique_key() ),
+                ) );
             }
         } catch ( Exception $ex ) {
             $secret_keys = $this->fetch();
@@ -88,11 +91,16 @@ class Salts
      *
      * @return Collection
      */
-    protected function fetch()
+    public function fetch()
     {
         return Collection::make(file($this->source, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES))
             ->map(function ($line) {
-                return trim( substr( $line, 28, 64 ) );
+                // capture everything between single quotes
+                preg_match_all(self::PATTERN_CAPTURE, $line, $matches);
+                // matches[x]
+                //   0 - complete match
+                //   1 - captures
+                return $matches[ 1 ];
             })->filter();
     }
 
