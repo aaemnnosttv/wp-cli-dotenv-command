@@ -90,7 +90,7 @@ Same as `generate`, but will update all keys for salts with new values.
 
 As of WP-CLI v0.23, you may install the dotenv command using the new `package` command:
 ```
-wp package install aaemnnosttv/wp-cli-dotenv-command:^1.0
+wp package install aaemnnosttv/wp-cli-dotenv-command:^2.0
 ```
 
 For installation with prior versions of WP-CLI, [see the wiki](https://github.com/aaemnnosttv/wp-cli-dotenv-command/wiki).
