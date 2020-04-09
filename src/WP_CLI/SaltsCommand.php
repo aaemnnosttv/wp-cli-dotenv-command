@@ -6,6 +6,7 @@ use Exception;
 use WP_CLI;
 use WP_CLI_Dotenv\Dotenv\Collection;
 use WP_CLI_Dotenv\Dotenv\File;
+use WP_CLI_Dotenv\Salts\RandomIntSaltProvider;
 use WP_CLI_Dotenv\Salts\Salts;
 
 /**
@@ -136,7 +137,12 @@ class SaltsCommand extends Command
         parent::init_args($args);
 
         $this->env = $this->get_env_for_write_or_fail();
-        $api = new Salts();
+        
+        if(function_exists('random_int')) {
+            $api = new Salts(new RandomIntSaltProvider());
+        } else {
+            $api = new Salts(null);
+        }
 
         try {
             $this->salts = $api->collect();

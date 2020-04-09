@@ -4,6 +4,7 @@ namespace WP_CLI_Dotenv\Salts;
 
 use Exception;
 use WP_CLI_Dotenv\Dotenv\Collection;
+use WP_CLI_Dotenv\Salts\SaltProviderInterface;
 
 class Salts
 {
@@ -24,13 +25,19 @@ class Salts
     protected $constant_list;
 
     /**
+     * Salt provider
+     */
+    private $saltProvider;
+
+    /**
      * Salts constructor.
      *
      * @param string $source
      */
-    public function __construct($source = 'https://api.wordpress.org/secret-key/1.1/salt/')
+    public function __construct($saltProvider = null, $source = 'https://api.wordpress.org/secret-key/1.1/salt/')
     {
         $this->source = $source;
+        $this->saltProvider = $saltProvider;
         $this->constant_list = array(
             'AUTH_KEY',
             'SECURE_AUTH_KEY',
@@ -55,7 +62,7 @@ class Salts
         $salts = $this->salts();
 
         if ($salts->isEmpty()) {
-            throw new Exception('There was a problem fetching salts from the WordPress generator service.');
+            throw new Exception('No resource exists for generating salts.');
         }
 
         return $salts;
@@ -69,17 +76,18 @@ class Salts
      */
     protected function salts()
     {
-        try {
+        if(!empty($this->saltProvider)) {
             $secret_keys = new Collection();
             foreach ( $this->constant_list as $key ) {
                 $secret_keys->push( array(
                     $key,
-                    trim( self::unique_key() ),
+                    trim( $this->saltProvider->salt() ),
                 ) );
             }
-        } catch ( Exception $ex ) {
+        } else {
             $secret_keys = $this->fetch();
         }
+
         return $secret_keys;
     }
 
@@ -91,7 +99,7 @@ class Salts
      *
      * @return Collection
      */
-    protected function fetch()
+    public function fetch()
     {
         return Collection::make(file($this->source, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES))
             ->map(function ($line) {
@@ -102,29 +110,5 @@ class Salts
                 //   1 - captures
                 return $matches[ 1 ];
             })->filter();
-    }
-
-    /**
-     * Generate a single unique key for salts
-     * 
-     * Reference: https://github.com/wp-cli/config-command/blob/9e3ccb8f013a7332c16a78ac68f9deee171b022f/src/Config_Command.php#L625-L682
-     * 
-     * @throws Exception
-     * 
-     * @return string
-     * 
-     */
-    protected static function unique_key()
-    {
-        if ( ! function_exists( 'random_int' ) ) {
-            throw new Exception( "'random_int' does not exist" );
-        }
-
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_ []{}<>~`+=,.;:/?|';
-        $key = '';
-        for ( $i = 0; $i < 64; $i++ ) {
-            $key .= substr( $chars, random_int( 0, strlen( $chars ) - 1 ), 1 );
-        }
-        return $key;
     }
 }
