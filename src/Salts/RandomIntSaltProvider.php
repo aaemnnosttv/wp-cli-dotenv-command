@@ -9,7 +9,7 @@ class RandomIntSaltProvider implements SaltProviderInterface
 	/**
 	 * 
      */
-	public function salt()
+	public function salt(): string
 	{
 		if ( ! function_exists( 'random_int' ) ) {
             throw new Exception( "'random_int' does not exist" );
