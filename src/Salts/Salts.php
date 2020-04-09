@@ -4,6 +4,7 @@ namespace WP_CLI_Dotenv\Salts;
 
 use Exception;
 use WP_CLI_Dotenv\Dotenv\Collection;
+use WP_CLI_Dotenv\Salts\SaltProviderInterface;
 
 class Salts
 {
@@ -19,13 +20,34 @@ class Salts
     protected $source;
 
     /**
+     * Salts to be generated
+     */
+    protected $constant_list;
+
+    /**
+     * Salt provider
+     */
+    private $saltProvider;
+
+    /**
      * Salts constructor.
      *
      * @param string $source
      */
-    public function __construct($source = 'https://api.wordpress.org/secret-key/1.1/salt/')
+    public function __construct($saltProvider = null, $source = 'https://api.wordpress.org/secret-key/1.1/salt/')
     {
         $this->source = $source;
+        $this->saltProvider = $saltProvider;
+        $this->constant_list = array(
+            'AUTH_KEY',
+            'SECURE_AUTH_KEY',
+            'LOGGED_IN_KEY',
+            'NONCE_KEY',
+            'AUTH_SALT',
+            'SECURE_AUTH_SALT',
+            'LOGGED_IN_SALT',
+            'NONCE_SALT'
+        );
     }
 
     /**
@@ -37,17 +59,41 @@ class Salts
      */
     public function collect()
     {
-        $salts = $this->fetch();
+        $salts = $this->salts();
 
         if ($salts->isEmpty()) {
-            throw new Exception('There was a problem fetching salts from the WordPress generator service.');
+            throw new Exception('No resource exists for generating salts.');
         }
 
         return $salts;
     }
 
     /**
-     * Fetch the salts from the generator and return the parsed response.
+     * Generate salts, locally if possible.
+     * May fetch from source.
+     * 
+     * @return Collection
+     */
+    protected function salts()
+    {
+        if(!empty($this->saltProvider)) {
+            $secret_keys = new Collection();
+            foreach ( $this->constant_list as $key ) {
+                $secret_keys->push( array(
+                    $key,
+                    trim( $this->saltProvider->salt() ),
+                ) );
+            }
+        } else {
+            $secret_keys = $this->fetch();
+        }
+
+        return $secret_keys;
+    }
+
+    /**
+     * Fetch salts from the generator and return the parsed response.
+     * Does not allow for extra salts to be set.
      *
      * @throws Exception
      *

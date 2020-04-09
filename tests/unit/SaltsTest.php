@@ -1,6 +1,7 @@
 <?php
 
 use WP_CLI_Dotenv\Fixtures;
+use WP_CLI_Dotenv\DeterministicSaltProvider;
 use WP_CLI_Dotenv\Salts\Salts;
 
 class SaltsTest extends PHPUnit_Framework_TestCase
@@ -10,9 +11,31 @@ class SaltsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    function it_prefers_local_generation()
+    {
+        $salts = new Salts(new DeterministicSaltProvider(), $this->get_fixture_path('wp-org-api-generated-salts-php'));
+        $collection = $salts->collect();
+
+        $this->assertEquals($collection->all(),
+            [
+                ['AUTH_KEY'         , 'arandomstring'],
+                ['SECURE_AUTH_KEY'  , 'arandomstring'],
+                ['LOGGED_IN_KEY'    , 'arandomstring'],
+                ['NONCE_KEY'        , 'arandomstring'],
+                ['AUTH_SALT'        , 'arandomstring'],
+                ['SECURE_AUTH_SALT' , 'arandomstring'],
+                ['LOGGED_IN_SALT'   , 'arandomstring'],
+                ['NONCE_SALT'       , 'arandomstring'],
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
     function it_parses_the_php_from_the_wordpress_generator_into_an_array()
     {
-        $salts = new Salts($this->get_fixture_path('wp-org-api-generated-salts-php'));
+        $salts = new Salts(null, $this->get_fixture_path('wp-org-api-generated-salts-php'));
         $collection = $salts->collect();
 
         $this->assertEquals($collection->all(),
@@ -35,6 +58,6 @@ class SaltsTest extends PHPUnit_Framework_TestCase
      */
     function it_blows_up_if_the_wordpress_org_api_is_down()
     {
-        (new Salts($this->get_fixture_path('wp-org-api-down')))->collect();
+        (new Salts(null, $this->get_fixture_path('wp-org-api-down')))->collect();
     }
 }

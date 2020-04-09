@@ -30,11 +30,14 @@
         "wp-cli/wp-cli": "^1.0",
         "behat/behat": "2.5.*"
     },
+    "suggest": {
+        "paragonie/random_compat": "Allows for local salt generation on PHP 5.x"
+    },
     "autoload": {
         "psr-4": {"WP_CLI_Dotenv\\": "src/"},
         "files": ["command.php"]
     },
     "autoload-dev": {
-        "classmap": ["tests/Fixtures.php"]
+        "classmap": ["tests/Fixtures.php", "tests/DeterministicSaltProvider.php"]
     }
 }
