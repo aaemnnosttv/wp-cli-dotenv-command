@@ -99,7 +99,7 @@ class Salts
      *
      * @return Collection
      */
-    public function fetch()
+    protected function fetch()
     {
         return Collection::make(file($this->source, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES))
             ->map(function ($line) {
