@@ -1,8 +1,11 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
+use WP_CLI_Dotenv\Dotenv\Exception\FilePermissionsException;
+use WP_CLI_Dotenv\Dotenv\Exception\NonExistentFileException;
 use WP_CLI_Dotenv\Dotenv\File;
 
-class DotenvFileTest extends PHPUnit_Framework_TestCase
+class DotenvFileTest extends TestCase
 {
     use WP_CLI_Dotenv\Fixtures;
 
@@ -30,19 +33,21 @@ class DotenvFileTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException \WP_CLI_Dotenv\Dotenv\Exception\NonExistentFileException
      */
     public function it_throws_an_exception_if_the_file_does_not_exist()
     {
+        $this->expectException(NonExistentFileException::class);
+
         File::at($this->get_fixture_path('env-unreadable'));
     }
 
     /**
      * @test
-     * @expectedException \WP_CLI_Dotenv\Dotenv\Exception\FilePermissionsException
      */
     public function it_throws_an_exception_if_the_file_is_not_readable()
     {
+        $this->expectException(FilePermissionsException::class);
+
         $path = $this->copy_fixture('env-basic');
         chmod($path, 0000);
         File::at($path);
@@ -60,10 +65,12 @@ class DotenvFileTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException \WP_CLI_Dotenv\Dotenv\Exception\FilePermissionsException
+     *
      */
     public function it_throws_an_exception_if_the_file_is_not_writable()
     {
+        $this->expectException(FilePermissionsException::class);
+
         $path = $this->get_fixture_path('env-unwritable');
         chmod($path, 0444);
         File::writable($path);

@@ -1,8 +1,9 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
 use WP_CLI_Dotenv\Dotenv\FileLines;
 
-class DotenvFileLinesTest extends PHPUnit_Framework_TestCase
+class DotenvFileLinesTest extends TestCase
 {
     use WP_CLI_Dotenv\Fixtures;
 

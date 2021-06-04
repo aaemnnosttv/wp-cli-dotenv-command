@@ -1,9 +1,10 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
 use WP_CLI_Dotenv\Fixtures;
 use WP_CLI_Dotenv\Salts\Salts;
 
-class SaltsTest extends PHPUnit_Framework_TestCase
+class SaltsTest extends TestCase
 {
     use Fixtures;
 
@@ -31,10 +32,11 @@ class SaltsTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException Exception
      */
     function it_blows_up_if_the_wordpress_org_api_is_down()
     {
+        $this->expectException(Exception::class);
+
         (new Salts($this->get_fixture_path('wp-org-api-down')))->collect();
     }
 }
