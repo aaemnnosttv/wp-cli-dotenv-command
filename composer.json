@@ -16,8 +16,8 @@
     ],
     "scripts": {
         "test": [
-            "@composer run-phpunit",
-            "@composer run-behat"
+            "@run-phpunit",
+            "@run-behat"
         ],
         "run-phpunit": "phpunit --colors=always",
         "run-behat": "behat --ansi"
@@ -37,5 +37,8 @@
     },
     "autoload-dev": {
         "classmap": ["tests/Fixtures.php"]
+    },
+    "config": {
+        "sort-packages": true
     }
 }
