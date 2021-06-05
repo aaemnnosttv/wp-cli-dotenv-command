@@ -1,0 +1,7 @@
+default:
+    suites:
+        default:
+            contexts:
+                - WP_CLI_Dotenv\Tests\Context\FeatureContext
+            paths:
+                - features
