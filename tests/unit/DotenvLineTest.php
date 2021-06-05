@@ -1,8 +1,9 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
 use WP_CLI_Dotenv\Dotenv\Line;
 
-class DotenvLineTest extends PHPUnit_Framework_TestCase
+class DotenvLineTest extends TestCase
 {
     /**
      * @test
