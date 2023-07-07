@@ -2,23 +2,29 @@
 
 namespace WP_CLI_Dotenv\Dotenv;
 
+use ArrayAccess;
+use ArrayIterator;
+use Closure;
+use Countable;
+use IteratorAggregate;
+use ReturnTypeWillChange;
 use Traversable;
 
-class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
+class Collection implements ArrayAccess, IteratorAggregate, Countable
 {
     protected $items;
 
     /**
      * Collection constructor.
      *
-     * @param array $items
+     * @param array|Collection $items
      */
     public function __construct($items = [])
     {
         $this->items = ($items instanceof Collection) ? $items->all() : $items;
     }
 
-    public static function make($items)
+    public static function make($items): Collection
     {
         return new static($items);
     }
@@ -28,17 +34,17 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
         return $this->items;
     }
 
-    public function keys()
+    public function keys(): Collection
     {
         return new static(array_keys($this->items));
     }
 
-    public function values()
+    public function values(): Collection
     {
         return new static(array_values($this->items));
     }
 
-    public function each($callback)
+    public function each($callback): Collection
     {
         foreach ($this->items as $key => $value) {
             if (false === $callback($value, $key)) {
@@ -49,7 +55,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
         return $this;
     }
 
-    public function map($callback)
+    public function map($callback): Collection
     {
         $keys   = array_keys($this->items);
         $values = array_map($callback, $this->items, $keys);
@@ -57,14 +63,14 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
         return new static(array_combine($keys, $values));
     }
 
-    public function contains($callback)
+    public function contains($callback): bool
     {
         return null !== $this->first($callback);
     }
 
     public function first($callback = null, $default = null)
     {
-        if ($callback instanceof \Closure) {
+        if ($callback instanceof Closure) {
             foreach ($this->items as $key => $value) {
                 if ($callback($key, $value)) {
                     return $value;
@@ -77,38 +83,38 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
         return reset($this->items);
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->items);
     }
 
-    public function implode($glue)
+    public function implode($glue): string
     {
         return implode($glue, $this->items);
     }
 
-    public function filter($callback = null)
+    public function filter($callback = null): Collection
     {
-        if ($callback instanceof \Closure) {
+        if ($callback instanceof Closure) {
             return new static(array_filter($this->items, $callback, ARRAY_FILTER_USE_BOTH));
         }
 
         return new static(array_filter($this->items));
     }
 
-    public function reject($callback)
+    public function reject($callback): Collection
     {
         return $this->filter(function ($value, $key) use ($callback) {
             return ! $callback($value, $key);
         });
     }
 
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return empty($this->items);
     }
 
-    public function reduce($callback, $initial)
+    public function reduce($callback, $initial): Collection
     {
         return new static(array_reduce($this->items, $callback, $initial));
     }
@@ -118,7 +124,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
         return $this->offsetExists($key) ? $this->offsetGet($key) : $default;
     }
 
-    public function pluck($prop)
+    public function pluck($prop): Collection
     {
         return $this->map(function ($item) use ($prop) {
             if (is_array($item) && array_key_exists($prop, $item)) {
@@ -131,14 +137,14 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
         });
     }
 
-    public function put($key, $value)
+    public function put($key, $value): void
     {
         $this->offsetSet($key, $value);
     }
 
     public function search($needle)
     {
-        if ($needle instanceof \Closure) {
+        if ($needle instanceof Closure) {
             foreach ($this->items as $key => $value) {
                 if ($needle($value, $key)) {
                     return $key;
@@ -150,105 +156,49 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
         return array_search($needle, $this->items);
     }
 
-    public function push($value)
+    public function push($value): Collection
     {
         array_push($this->items, $value);
 
         return $this;
     }
 
-    public function only($keys)
+    public function only($keys): Collection
     {
         return $this->filter(function ($value, $key) use ($keys) {
             return in_array($key, $keys);
         });
     }
 
-    public function unique()
+    public function unique(): Collection
     {
         return new static(array_unique($this->items));
     }
 
-    /**
-     * Whether a offset exists
-     * @link  http://php.net/manual/en/arrayaccess.offsetexists.php
-     *
-     * @param mixed $offset <p>
-     *                      An offset to check for.
-     *                      </p>
-     *
-     * @return boolean true on success or false on failure.
-     * </p>
-     * <p>
-     * The return value will be casted to boolean if non-boolean was returned.
-     * @since 5.0.0
-     */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return array_key_exists($offset, $this->items);
     }
 
-    /**
-     * Offset to retrieve
-     * @link  http://php.net/manual/en/arrayaccess.offsetget.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to retrieve.
-     *                      </p>
-     *
-     * @return mixed Can return all value types.
-     * @since 5.0.0
-     */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->offsetExists($offset) ? $this->items[ $offset ] : null;
     }
 
-    /**
-     * Offset to set
-     * @link  http://php.net/manual/en/arrayaccess.offsetset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to assign the value to.
-     *                      </p>
-     * @param mixed $value  <p>
-     *                      The value to set.
-     *                      </p>
-     *
-     * @return void
-     * @since 5.0.0
-     */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->items[ $offset ] = $value;
     }
 
-    /**
-     * Offset to unset
-     * @link  http://php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to unset.
-     *                      </p>
-     *
-     * @return void
-     * @since 5.0.0
-     */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->items[ $offset ]);
     }
 
-    /**
-     * Retrieve an external iterator
-     * @link  http://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or
-     * <b>Traversable</b>
-     * @since 5.0.0
-     */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->items);
+        return new ArrayIterator($this->items);
     }
 }
 
