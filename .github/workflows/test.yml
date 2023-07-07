@@ -23,7 +23,7 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     strategy:
       matrix:
-        php-version: ['8.2', '8.1', '8.0', '7.0']
+        php-version: ['8.2', '8.1', '8.0', '7.4']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
